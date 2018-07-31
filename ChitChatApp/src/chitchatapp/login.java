@@ -5,6 +5,8 @@
  */
 package chitchatapp;
 
+import javax.swing.*;
+
 /**
  *
  * @author 20058837
@@ -17,6 +19,8 @@ public class login extends javax.swing.JFrame {
     public login() {
         initComponents();
     }
+    
+    public static String nickname;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -101,13 +105,15 @@ public class login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnJoinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJoinActionPerformed
-        String nickname = tfNickname.getText();
-        
-        client chat = new client();
-        chat.setVisible(true);
-        jPanel1.setVisible(false);
-        chat.setTitle("ChitChat - " + nickname);
-        //tfCNickname.setText = nickname;
+        if (tfNickname.getText().equals("")) {
+            JOptionPane.showMessageDialog(rootPane, "Please enter a nickname");
+        } else {
+            nickname = tfNickname.getText();
+            client chat = new client();
+            chat.setVisible(true);
+            jPanel1.setVisible(false);
+            chat.setTitle("ChitChat - " + nickname);
+        }
     }//GEN-LAST:event_btnJoinActionPerformed
 
     /**
