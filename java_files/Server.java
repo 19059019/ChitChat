@@ -1,45 +1,50 @@
 import java.io.DataInputStream;
 import java.io.PrintStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
 
 public class Server {
-  public static void main(String args[]) {
 
-    ServerSocket echoServer = null;
-    String line = "";
-    DataInputStream is;
-    PrintStream os;
-    Socket clientSocket = null;
-
-    /*
-     * Open a server socket on port 2222. Note that we can't choose a port less
-     * than 1023 if we are not privileged users (root).
-     */
+  public static void main(String[] args) {
+    ServerSocket ss = null;
+    DataInputStream is = null;
+    DataInputStream il = null;
+    Socket c = null;
+    PrintStream o = null;
+    Boolean server;
+    // open ServerSocket
     try {
-      echoServer = new ServerSocket(2222);
-    } catch (IOException e) {
+      ss = new ServerSocket(8000);
+    } catch(IOException e) {
       System.out.println(e);
     }
 
-    /*
-     * Create a socket object from the ServerSocket to listen to and accept
-     * connections. Open input and output streams.
-     */
-    System.out.println("The server started. To stop it press <CTRL><C>.");
+    // act on Socket server
     try {
-      clientSocket = echoServer.accept();
-      is = new DataInputStream(clientSocket.getInputStream());
-      os = new PrintStream(clientSocket.getOutputStream());
-
-      /* As long as we receive data, echo that data back to the client. */
-      while (true) {
-        line = is.readLine();
-        System.out.println(line);
+      c = ss.accept();
+      is = new DataInputStream(c.getInputStream());
+      il = new DataInputStream(new BufferedInputStream(System.in));
+      o = new PrintStream(c.getOutputStream());
+      o.println("Wololo");
+      String l;
+      String response;
+      server =  true;
+      while(server) {
+        l = is.readLine();
+        System.out.println(l);
+        o.println(il.readLine());
       }
-    } catch (IOException e) {
+      // close connections and streamsS
+      ss.close();
+      c.close();
+      is.close();
+      o.close();
+    } catch(IOException e) {
       System.out.println(e);
     }
+
   }
+
 }
