@@ -109,6 +109,8 @@ public class login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, "Please enter a nickname");
         } else {
             nickname = tfNickname.getText();
+            
+            //TODO: check if nickname is aready in use!
             client chat = new client();
             chat.setVisible(true);
             jPanel1.setVisible(false);
