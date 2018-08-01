@@ -21,7 +21,6 @@ class clientInstance extends Thread {
 
   public void run() {
     clientInstance[] clientThreads = this.clientThreads;
-
     int clientLimit = this.clientLimit;
 
     try {
