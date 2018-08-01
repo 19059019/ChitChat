@@ -8,41 +8,39 @@ import java.net.ServerSocket;
 public class Server {
 
   public static void main(String[] args) {
-    ServerSocket ss = null;
-    DataInputStream is = null;
-    DataInputStream il = null;
-    Socket c = null;
-    PrintStream o = null;
-    Boolean server;
+    ServerSocket server = null;
+    DataInputStream clientMessage = null;
+    DataInputStream serverMessage = null;
+    Socket client = null;
+    PrintStream output = null;
+    Boolean status;
     // open ServerSocket
     try {
-      ss = new ServerSocket(8000);
+      server = new ServerSocket(8000);
     } catch(IOException e) {
-      System.out.println(e);
+      System.err.println(e);
     }
 
     // act on Socket server
     try {
-      c = ss.accept();
-      is = new DataInputStream(c.getInputStream());
-      il = new DataInputStream(new BufferedInputStream(System.in));
-      o = new PrintStream(c.getOutputStream());
-      o.println("Wololo");
-      String l;
+      client = server.accept();
+      clientMessage = new DataInputStream(client.getInputStream());
+      serverMessage = new DataInputStream(new BufferedInputStream(System.in));
+      output = new PrintStream(client.getOutputStream());
+      output.println("Welcome!");
       String response;
-      server =  true;
-      while(server) {
-        l = is.readLine();
-        System.out.println(l);
-        o.println(il.readLine());
+      status =  true;
+      while(status && (response = clientMessage.readLine()) != null) {
+        System.out.println(response);
+        output.println(serverMessage.readLine());
       }
-      // close connections and streamsS
-      ss.close();
-      c.close();
-      is.close();
-      o.close();
+      // close connections and streams
+      server.close();
+      client.close();
+      clientMessage.close();
+      output.close();
     } catch(IOException e) {
-      System.out.println(e);
+      System.err.println(e);
     }
 
   }

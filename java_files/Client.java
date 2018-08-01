@@ -5,44 +5,62 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Client {
+public class Client implements Runnable{
+
+  private static Socket client =  null;
+  private static DataInputStream serverMessage = null;
+  private static DataInputStream clientMessage = null;
+  private static PrintStream output = null;
+  private static boolean status = true;
+  private static String user = "Default";
+
 
   public static void main(String[] args) {
-    Socket s =  null;
-    DataInputStream is = null;
-    DataInputStream il = null;
-    PrintStream o = null;
+    int port = 8000;
+    String host = "localhost";
 
     // connect to server socket and open input stream
     try {
-      s = new Socket("localhost", 8000);
-      is = new DataInputStream(s.getInputStream());
-      il = new DataInputStream(new BufferedInputStream(System.in));
-      o = new PrintStream(s.getOutputStream());
+      client = new Socket(host, port);
+      serverMessage = new DataInputStream(client.getInputStream());
+      clientMessage = new DataInputStream(new BufferedInputStream(System.in));
+      output = new PrintStream(client.getOutputStream());
+    } catch (UnknownHostException e) {
+      System.err.println(e);
     } catch(IOException e) {
-      System.out.println(e);
+      System.err.println(e);
     }
 
-    if (s != null && is != null && o != null) {
+    if (client != null && serverMessage != null && output != null) {
       try {
-
-        String response;
-        o.println("Client Connected");
-        while ((response = is.readLine()) != null) {
-          System.out.println(response);
-          o.println(il.readLine());
+        new Thread(new Client()).start();
+        output.println(user+" Connected");
+        while (status) {
+          output.println(clientMessage.readLine().trim());
         }
-
-        o.close();
-        is.close();
-        s.close();
-      } catch (UnknownHostException e) {
-        System.err.println("UnknownHostException: " + e);
+        output.close();
+        clientMessage.close();
+        client.close();
       } catch(IOException e) {
-        System.out.println(e);
+        System.err.println(e);
       }
     }
+  }
 
+  public void run() {
+    messageListener();
+  }
+
+  public void messageListener() {
+    String message;
+    try {
+      while ((message = serverMessage.readLine()) != null) {
+        System.out.println(message);
+      }
+        status = false;
+    } catch (IOException e) {
+      System.err.println(e);
+    }
   }
 
 }
