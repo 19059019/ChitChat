@@ -1,25 +1,99 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package chitchatapp;
 
 import javax.swing.*;
+import java.io.DataInputStream;
+import java.io.PrintStream;
+import java.io.IOException;
+import java.net.Socket;
 
-/**
- *
- * @author 20058837
- */
-public class ClientPane extends javax.swing.JFrame {
+class ClientPane extends javax.swing.JFrame {
 
-    /**
-     * Creates new form client
-     */
-    public ClientPane() {
+    private DataInputStream is = null;
+    private PrintStream output = null;
+    private Socket client = null;
+    private final ClientPane[] clientThreads;
+    private int clientLimit;
+    private Thread tThread = new Thread();
+
+    public ClientPane(Socket client, ClientPane[] clientThreads) {
         initComponents();
+        this.client = client;
+        this.clientThreads = clientThreads;
+        clientLimit = clientThreads.length;
     }
-    
+
+    public void start() {
+        tThread.start();
+    }
+
+    public void run() {
+        ClientPane[] clientThreads = this.clientThreads;
+        int clientLimit = this.clientLimit;
+
+        Login lg = new Login();
+        lg.setVisible(true);
+
+        try {
+            /*
+       * Create input and output streams for this client.
+             */
+            is = new DataInputStream(client.getInputStream());
+            output = new PrintStream(client.getOutputStream());
+            //output.println("Enter your name.");
+            String name = "";
+
+            while (name.equals("")) {
+                name = lg.toString();
+            }
+
+            //output.println("Hello " + name + " to our chat room.\nTo leave enter /quit in a new line");
+            JOptionPane.showMessageDialog(null, "Hello " + name + " to our chat room.\nTo leave enter /quit in a new line");
+
+            for (int i = 0; i < clientLimit; i++) {
+                if (clientThreads[i] != null && clientThreads[i] != this) {
+                    clientThreads[i].output.println("*** A new user " + name
+                            + " entered the chat room !!! ***");
+                }
+            }
+            while (true) {
+                String line = is.readLine();
+                if (line.startsWith("/quit")) {
+                    break;
+                }
+                for (int i = 0; i < clientLimit; i++) {
+                    if (clientThreads[i] != null) {
+                        clientThreads[i].output.println("<" + name + "&gr; " + line);
+                    }
+                }
+            }
+            for (int i = 0; i < clientLimit; i++) {
+                if (clientThreads[i] != null && clientThreads[i] != this) {
+                    clientThreads[i].output.println("*** The user " + name
+                            + " is leaving the chat room !!! ***");
+                }
+            }
+            output.println("*** Bye " + name + " ***");
+
+            /*
+       * Clean up. Set the current thread variable to null so that a new client
+       * could be accepted by the server.
+             */
+            for (int i = 0; i < clientLimit; i++) {
+                if (clientThreads[i] == this) {
+                    clientThreads[i] = null;
+                }
+            }
+
+            /*
+       * Close the output stream, close the input stream, close the socket.
+             */
+            is.close();
+            output.close();
+            client.close();
+        } catch (IOException e) {
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -41,6 +115,7 @@ public class ClientPane extends javax.swing.JFrame {
         btnGroup = new javax.swing.JButton();
         lblNumUsers = new javax.swing.JLabel();
         btnSend = new javax.swing.JButton();
+        btnLeave = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -94,6 +169,8 @@ public class ClientPane extends javax.swing.JFrame {
             }
         });
 
+        btnLeave.setText("Leave Chat");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -109,15 +186,17 @@ public class ClientPane extends javax.swing.JFrame {
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
                             .addComponent(tfMessageInput))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnWhisper)
-                            .addComponent(btnGroup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblNumUsers))
-                            .addComponent(jScrollPane2)
-                            .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(btnWhisper)
+                                .addComponent(btnGroup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel1)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(lblNumUsers))
+                                .addComponent(jScrollPane2)
+                                .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(btnLeave))
                         .addContainerGap(12, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -140,7 +219,9 @@ public class ClientPane extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnGroup)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tfMessageInput, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(tfMessageInput, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLeave))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSend)
                 .addContainerGap(9, Short.MAX_VALUE))
@@ -174,7 +255,7 @@ public class ClientPane extends javax.swing.JFrame {
         if (!tfMessageInput.getText().equals("")) {//maybe use some pattern matching using regex's?
             String message = tfMessageInput.getText();
             String name = Login.nickname;
-            
+
             //send stuff to server
         }
     }//GEN-LAST:event_btnSendActionPerformed
@@ -192,44 +273,9 @@ public class ClientPane extends javax.swing.JFrame {
         btnGroup.setEnabled(false);
     }//GEN-LAST:event_btnGroupActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ClientPane.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ClientPane.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ClientPane.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ClientPane.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ClientPane().setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGroup;
+    private javax.swing.JButton btnLeave;
     private javax.swing.JButton btnSend;
     private javax.swing.JButton btnWhisper;
     private javax.swing.JLabel jLabel1;

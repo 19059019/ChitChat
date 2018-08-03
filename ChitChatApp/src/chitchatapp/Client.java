@@ -1,3 +1,5 @@
+package chitchatapp;
+
 import java.io.DataInputStream;
 import java.io.PrintStream;
 import java.io.BufferedInputStream;
@@ -5,7 +7,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Client implements Runnable{
+public class Client implements Runnable {
 
   private static Socket client =  null;
   private static DataInputStream serverMessage = null;

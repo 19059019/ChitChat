@@ -20,7 +20,7 @@ public class Login extends javax.swing.JFrame {
         initComponents();
     }
     
-    public static String nickname;
+    public static String nickname = "";
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -105,15 +105,15 @@ public class Login extends javax.swing.JFrame {
 
     private void btnJoinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJoinActionPerformed
         if (tfNickname.getText().equals("")) {
-            JOptionPane.showMessageDialog(rootPane, "Please enter a nickname");
+            JOptionPane.showMessageDialog(rootPane, "Please enter your nickname");
         } else {
             nickname = tfNickname.getText();
             
             //TODO: check if nickname is aready in use!
-            ClientPane chat = new ClientPane();
-            chat.setVisible(true);
-            jPanel1.setVisible(false);
-            chat.setTitle("ChitChat - " + nickname);
+//            ClientPane chat = new ClientPane();
+//            chat.setVisible(true);
+//            jPanel1.setVisible(false);
+//            chat.setTitle("ChitChat - " + nickname);
         }
     }//GEN-LAST:event_btnJoinActionPerformed
 
@@ -154,6 +154,13 @@ public class Login extends javax.swing.JFrame {
         
     }
 
+    @Override
+    public String toString() {
+        return nickname;
+    }
+
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnJoin;
     private javax.swing.JLabel jLabel1;

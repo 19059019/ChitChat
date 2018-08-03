@@ -1,9 +1,10 @@
+package chitchatapp;
+
 import java.io.DataInputStream;
 import java.io.PrintStream;
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.ServerSocket;
+import javax.swing.JOptionPane;
 
 class clientInstance extends Thread {
 
@@ -23,7 +24,8 @@ class clientInstance extends Thread {
     clientInstance[] clientThreads = this.clientThreads;
     int clientLimit = this.clientLimit;
     
-    login lg = new login();
+    Login lg = new Login();
+    lg.setVisible(true);
 
     try {
       /*
@@ -32,9 +34,15 @@ class clientInstance extends Thread {
       is = new DataInputStream(client.getInputStream());
       output = new PrintStream(client.getOutputStream());
       //output.println("Enter your name.");
-      String name = is.readLine().trim();
-      output.println("Hello " + name
-          + " to our chat room.\nTo leave enter /quit in a new line");
+      String name = "";
+      
+      while (name.equals("")) {            
+          name = lg.toString();
+      }
+            
+      //output.println("Hello " + name + " to our chat room.\nTo leave enter /quit in a new line");
+      JOptionPane.showMessageDialog(null, "Hello " + name + " to our chat room.\nTo leave enter /quit in a new line");
+      
       for (int i = 0; i < clientLimit; i++) {
         if (clientThreads[i] != null && clientThreads[i] != this) {
           clientThreads[i].output.println("*** A new user " + name

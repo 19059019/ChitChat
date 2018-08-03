@@ -1,8 +1,6 @@
 package chitchatapp;
 
-import java.io.DataInputStream;
 import java.io.PrintStream;
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
@@ -11,7 +9,7 @@ public class Server {
   private static ServerSocket server = null;
   private static Socket client = null;
   private static final int clientLimit = 5;
-  private static final clientInstance[] clientThreads = new clientInstance[clientLimit];
+  private static final ClientPane[] clientThreads = new ClientPane[clientLimit];
   private static PrintStream output = null;
   private static Boolean status = true;
 
@@ -32,7 +30,7 @@ public class Server {
         client = server.accept();
         for (i = 0; i < clientLimit; i++) {
           if (clientThreads[i] == null) {
-            clientThreads[i] = new clientInstance(client, clientThreads);
+            clientThreads[i] = new ClientPane(client, clientThreads);
             clientThreads[i].start();
             break;
           }
@@ -41,7 +39,7 @@ public class Server {
         // Message if too many clients have connected
         if (i == clientLimit) {
           output = new PrintStream(client.getOutputStream());
-          output.println("ChitChat Chatroom full, unlucky!");
+          output.println("ChitChat chatroom full, unlucky!");
           output.close();
           client.close();
         }
