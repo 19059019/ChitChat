@@ -1,5 +1,3 @@
-package chitchatapp;
-
 import java.io.DataInputStream;
 import java.io.PrintStream;
 import java.io.BufferedInputStream;
@@ -7,61 +5,62 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Client {
+public class Client implements Runnable{
+
+  private static Socket client =  null;
+  private static DataInputStream serverMessage = null;
+  private static DataInputStream clientMessage = null;
+  private static PrintStream output = null;
+  private static boolean status = true;
+  private static String user = "Default";
+
+
   public static void main(String[] args) {
+    int port = 8000;
+    String host = "localhost";
 
-    Socket clientSocket = null;
-    DataInputStream is = null;
-    PrintStream os = null;
-    DataInputStream inputLine = null;
-
-    /*
-     * Open a socket on port 2222. Open the input and the output streams.
-     */
+    // connect to server socket and open input stream
     try {
-      clientSocket = new Socket("localhost", 2222);
-      os = new PrintStream(clientSocket.getOutputStream());
-      is = new DataInputStream(clientSocket.getInputStream());
-      inputLine = new DataInputStream(new BufferedInputStream(System.in));
+      client = new Socket(host, port);
+      serverMessage = new DataInputStream(client.getInputStream());
+      clientMessage = new DataInputStream(new BufferedInputStream(System.in));
+      output = new PrintStream(client.getOutputStream());
     } catch (UnknownHostException e) {
-      System.err.println("Don't know about host");
-    } catch (IOException e) {
-      System.err.println("Couldn't get I/O for the connection to host");
+      System.err.println(e);
+    } catch(IOException e) {
+      System.err.println(e);
     }
 
-    /*
-     * If everything has been initialized then we want to write some data to the
-     * socket we have opened a connection to on port 2222.
-     */
-    if (clientSocket != null && os != null && is != null) {
+    if (client != null && serverMessage != null && output != null) {
       try {
-
-        /*
-         * Keep on reading from/to the socket till we receive the "Ok" from the
-         * server, once we received that then we break.
-         */
-        System.out.println("The client started. Type any text. To quit it type 'Ok'.");
-        String responseLine;
-        os.println(inputLine.readLine());
-        while ((responseLine = is.readLine()) != null) {
-          System.out.println(responseLine);
-          if (responseLine.indexOf("Ok") != -1) {
-            break;
-          }
-          os.println(inputLine.readLine());
+        new Thread(new Client()).start();
+        output.println(user+" Connected");
+        while (status) {
+          output.println(clientMessage.readLine().trim());
         }
-
-        /*
-         * Close the output stream, close the input stream, close the socket.
-         */
-        os.close();
-        is.close();
-        clientSocket.close();
-      } catch (UnknownHostException e) {
-        System.err.println("Trying to connect to unknown host: " + e);
-      } catch (IOException e) {
-        System.err.println("IOException:  " + e);
+        output.close();
+        clientMessage.close();
+        client.close();
+      } catch(IOException e) {
+        System.err.println(e);
       }
     }
   }
+
+  public void run() {
+    messageListener();
+  }
+
+  public void messageListener() {
+    String message;
+    try {
+      while ((message = serverMessage.readLine()) != null) {
+        System.out.println(message);
+      }
+        status = false;
+    } catch (IOException e) {
+      System.err.println(e);
+    }
+  }
+
 }

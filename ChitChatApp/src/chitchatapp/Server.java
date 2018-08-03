@@ -1,46 +1,55 @@
 package chitchatapp;
+
 import java.io.DataInputStream;
 import java.io.PrintStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
 
 public class Server {
-  public static void main(String args[]) {
+  private static ServerSocket server = null;
+  private static Socket client = null;
+  private static final int clientLimit = 5;
+  private static final clientInstance[] clientThreads = new clientInstance[clientLimit];
+  private static PrintStream output = null;
+  private static Boolean status = true;
 
-    ServerSocket echoServer = null;
-    String line;
-    DataInputStream is;
-    PrintStream os;
-    Socket clientSocket = null;
+  public static void main(String[] args) {
+    int port = 8000;
 
-    /*
-     * Open a server socket on port 2222. Note that we can't choose a port less
-     * than 1023 if we are not privileged users (root).
-     */
+    // open ServerSocket
     try {
-      echoServer = new ServerSocket(2222);
-    } catch (IOException e) {
-      System.out.println(e);
+      server = new ServerSocket(port);
+    } catch(IOException e) {
+      System.err.println(e);
     }
 
-    /*
-     * Create a socket object from the ServerSocket to listen to and accept
-     * connections. Open input and output streams.
-     */
-    System.out.println("The server started. To stop it press <CTRL><C>.");
-    try {
-      clientSocket = echoServer.accept();
-      is = new DataInputStream(clientSocket.getInputStream());
-      os = new PrintStream(clientSocket.getOutputStream());
+    // create new socket for each new client that attempts to connect
+    while (status) {
+      int i;
+      try{
+        client = server.accept();
+        for (i = 0; i < clientLimit; i++) {
+          if (clientThreads[i] == null) {
+            clientThreads[i] = new clientInstance(client, clientThreads);
+            clientThreads[i].start();
+            break;
+          }
+        }
 
-      /* As long as we receive data, echo that data back to the client. */
-      while (true) {
-        line = is.readLine();
-        os.println("From server: " + line);
+        // Message if too many clients have connected
+        if (i == clientLimit) {
+          output = new PrintStream(client.getOutputStream());
+          output.println("ChitChat Chatroom full, unlucky!");
+          output.close();
+          client.close();
+        }
+      } catch (IOException e) {
+        System.err.println(e);
       }
-    } catch (IOException e) {
-      System.out.println(e);
+
     }
   }
+
 }
