@@ -1,5 +1,6 @@
 package chitchatapp;
 
+import java.io.DataInputStream;
 import java.io.PrintStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -9,6 +10,8 @@ public class Server {
 
     private static ServerSocket server = null;
     private static Socket client = null;
+    private static DataInputStream serverMessage = null;
+    private static DataInputStream clientMessage = null;
     private static final int clientLimit = 10;
     private static final clientInstance[] clientThreads = new clientInstance[clientLimit];
     private static PrintStream output = null;

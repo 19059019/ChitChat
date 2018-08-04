@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import javax.swing.JOptionPane;
 
-class clientInstance extends Thread {
+class clientInstance extends Thread {   
 
     private DataInputStream is = null;
     private PrintStream output = null;
@@ -53,17 +53,20 @@ class clientInstance extends Thread {
                             + " entered the chat room !!! ***");
                 }
             }
+            
             while (true) {
                 String line = is.readLine();
                 if (line.startsWith("/quit")) {
                     break;
                 }
+                
                 for (int i = 0; i < clientLimit; i++) {
                     if (clientThreads[i] != null) {
                         clientThreads[i].output.println("<" + name + "&gr; " + line);
                     }
                 }
             }
+            
             for (int i = 0; i < clientLimit; i++) {
                 if (clientThreads[i] != null && clientThreads[i] != this) {
                     clientThreads[i].output.println("*** The user " + name
