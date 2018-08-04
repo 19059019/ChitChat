@@ -9,7 +9,7 @@ public class Server {
 
     private static ServerSocket server = null;
     private static Socket client = null;
-    private static final int clientLimit = 5;
+    private static final int clientLimit = 10;
     private static final clientInstance[] clientThreads = new clientInstance[clientLimit];
     private static PrintStream output = null;
     private static Boolean status = true;
