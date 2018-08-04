@@ -1,22 +1,30 @@
 package chitchatapp;
 
+import javax.swing.JOptionPane;
 import java.io.DataInputStream;
 import java.io.PrintStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
-import javax.swing.JOptionPane;
+import java.net.ServerSocket;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+import java.sql.Timestamp;
 
-class clientInstance extends Thread {   
+class clientInstance extends Thread {
 
-    private DataInputStream is = null;
+    private DataInputStream clientMessage = null;
     private PrintStream output = null;
     private Socket client = null;
     private final clientInstance[] clientThreads;
     private int clientLimit;
+    private ArrayList<String> userNames;
 
-    public clientInstance(Socket client, clientInstance[] clientThreads) {
+    public clientInstance(Socket client, clientInstance[] clientThreads, ArrayList<String> userNames) {
         this.client = client;
         this.clientThreads = clientThreads;
+        this.userNames = userNames;
         clientLimit = clientThreads.length;
     }
 
@@ -31,7 +39,7 @@ class clientInstance extends Thread {
             /*
        * Create input and output streams for this client.
              */
-            is = new DataInputStream(client.getInputStream());
+            clientMessage = new DataInputStream(client.getInputStream());
             output = new PrintStream(client.getOutputStream());
             //output.println("Enter your name.");
             String name = "";
@@ -42,38 +50,65 @@ class clientInstance extends Thread {
                 //System.out.println("lg.toString = " + name);
                 //System.out.println("user = " + ClientPane.user);
             }
-          
-            //output.println("Hello " + name + " to our chat room.\nTo leave enter /quit in a new line");
-            JOptionPane.showMessageDialog(null, "Hello " + name + " to our chat room.\nTo leave enter /quit in a new line");
-            lg.dispose();
-            
-            for (int i = 0; i < clientLimit; i++) {
-                if (clientThreads[i] != null && clientThreads[i] != this) {
-                    clientThreads[i].output.println("*** A new user " + name
-                            + " entered the chat room !!! ***");
+
+            String user = clientMessage.readLine().trim();
+            //TODO: deal with duplicate usernames
+            if (!userNames.isEmpty()) {
+                System.out.println("Checking For Duplicate Names");
+                while (!userNames.contains(user)) {
+                    output.println(user + " is already taken, please select a new Username");
+                    user = clientMessage.readLine().trim();
                 }
             }
-            
+
+            synchronized (this) {
+                userNames.add(user);
+            }
+
+            //output.println("Welcome to Chit Chat, it's where its at!\n To leave the chatroom send \'EXIT\'");            
+            JOptionPane.showMessageDialog(null, "Welcome to Chit Chat, it's where its at!\n To leave the chatroom send \'EXIT\'");
+
+            Timestamp stamp = new Timestamp(System.currentTimeMillis());
+            System.out.println(user + " Joined: " + stamp);
+
+            lg.dispose();
+
+            for (int i = 0; i < clientLimit; i++) {
+                if (clientThreads[i] != null && clientThreads[i] != this) {
+                    clientThreads[i].output.println(user + " is now where its at!");
+                }
+            }
+
             while (true) {
-                String line = is.readLine();
-                if (line.startsWith("/quit")) {
+                String line = clientMessage.readLine();
+                if (line.startsWith("EXIT")) {
                     break;
                 }
-                
+
                 for (int i = 0; i < clientLimit; i++) {
                     if (clientThreads[i] != null) {
-                        clientThreads[i].output.println("<" + name + "&gr; " + line);
+                        clientThreads[i].output.println("-" + user + "> " + line);
                     }
                 }
             }
             
             for (int i = 0; i < clientLimit; i++) {
                 if (clientThreads[i] != null && clientThreads[i] != this) {
-                    clientThreads[i].output.println("*** The user " + name
-                            + " is leaving the chat room !!! ***");
+                    clientThreads[i].output.println(user + " Is no longer Where its at!");
                 }
             }
-            output.println("*** Bye " + name + " ***");
+            
+            output.println("You are leaving ChitChat!\nDisconnecting...");
+
+            // remove user from list of usernames
+            synchronized (this) {
+                userNames.remove(user);
+                System.out.println(userNames.indexOf(user));
+            }
+
+            clientMessage.close();
+            output.close();
+            client.close();
 
             /*
        * Clean up. Set the current thread variable to null so that a new client
@@ -85,12 +120,6 @@ class clientInstance extends Thread {
                 }
             }
 
-            /*
-       * Close the output stream, close the input stream, close the socket.
-             */
-            is.close();
-            output.close();
-            client.close();
         } catch (IOException e) {
         }
     }

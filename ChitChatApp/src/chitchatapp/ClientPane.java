@@ -40,12 +40,16 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
             try {
                 System.out.println("hello");
                 new Thread(new ClientPane()).start();
-                output.println(user + " Connected");
+                
+                //output.println(user + " Connected");
+                
                 while (status) {
                     output.println(clientMessage.readLine().trim());
                 }
+                
                 output.close();
                 clientMessage.close();
+                serverMessage.close();
                 client.close();
             } catch (IOException e) {
                 System.err.println(e);
@@ -60,10 +64,12 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
 
     public void messageListener() {
         String message;
+        
         try {
             while ((message = serverMessage.readLine()) != null) {
                 System.out.println(message);
             }
+            
             status = false;
         } catch (IOException e) {
             System.err.println(e);
