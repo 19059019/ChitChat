@@ -19,7 +19,7 @@ public class Login extends javax.swing.JFrame {
     public Login() {
         initComponents();
     }
-    
+
     public static String nickname = "";
 
     /**
@@ -108,7 +108,7 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, "Please enter your nickname");
         } else {
             nickname = tfNickname.getText();
-            
+
             //TODO: check if nickname is aready in use!
 //            ClientPane chat = new ClientPane();
 //            chat.setVisible(true);
@@ -151,7 +151,7 @@ public class Login extends javax.swing.JFrame {
                 new Login().setVisible(true);
             }
         });
-        
+
     }
 
     @Override
@@ -159,8 +159,7 @@ public class Login extends javax.swing.JFrame {
         return nickname;
     }
 
-    
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnJoin;
     private javax.swing.JLabel jLabel1;

@@ -16,7 +16,6 @@ public class Client implements Runnable {
   private static boolean status = true;
   private static String user = "Default";
 
-
   public static void main(String[] args) {
     int port = 8000;
     String host = "localhost";

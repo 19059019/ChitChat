@@ -29,7 +29,7 @@ class clientInstance extends Thread {
        */
       is = new DataInputStream(client.getInputStream());
       output = new PrintStream(client.getOutputStream());
-      output.println("Enter your name.");
+      output.println("Enter your name:");
       String name = is.readLine().trim();
       output.println("Hello " + name
           + " to our chat room.\nTo leave enter /quit in a new line");
