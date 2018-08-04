@@ -15,11 +15,9 @@ public class Server {
     private static Boolean status = true;
 
     public static void main(String[] args) {
-        int port = 8000;
-
         // open ServerSocket
         try {
-            server = new ServerSocket(port);
+            server = new ServerSocket(8000);
         } catch (IOException e) {
             System.err.println(e);
         }

@@ -15,19 +15,18 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     private static DataInputStream clientMessage = null;
     private static PrintStream output = null;
     private static boolean status = true;
-    private static String user = "Default";
+    public static String user = "Default";
 
-    public ClientPane() {
+    public void ClientPaneInit() {
         initComponents();
+        setVisible(true);
+        setTitle("ChitChat - " + user);
     }
 
     public static void main(String[] args) {
-        int port = 8000;
-        String host = "localhost";
-
         // connect to server socket and open input stream
         try {
-            client = new Socket(host, port);
+            client = new Socket("localhost", 8000);
             serverMessage = new DataInputStream(client.getInputStream());
             clientMessage = new DataInputStream(new BufferedInputStream(System.in));
             output = new PrintStream(client.getOutputStream());
@@ -39,6 +38,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
 
         if (client != null && serverMessage != null && output != null) {
             try {
+                System.out.println("hello");
                 new Thread(new ClientPane()).start();
                 output.println(user + " Connected");
                 while (status) {
@@ -54,6 +54,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     }
 
     public void run() {
+        ClientPaneInit();
         messageListener();
     }
 

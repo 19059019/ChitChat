@@ -37,12 +37,16 @@ class clientInstance extends Thread {
             String name = "";
 
             while (name.equals("")) {
-                name = lg.toString();
+                name = lg.toString();//chose which one of these to use
+                //ClientPane.user = name;
+                //System.out.println("lg.toString = " + name);
+                //System.out.println("user = " + ClientPane.user);
             }
-
+          
             //output.println("Hello " + name + " to our chat room.\nTo leave enter /quit in a new line");
             JOptionPane.showMessageDialog(null, "Hello " + name + " to our chat room.\nTo leave enter /quit in a new line");
-
+            lg.dispose();
+            
             for (int i = 0; i < clientLimit; i++) {
                 if (clientThreads[i] != null && clientThreads[i] != this) {
                     clientThreads[i].output.println("*** A new user " + name

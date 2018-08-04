@@ -17,12 +17,9 @@ public class Client implements Runnable {
   private static String user = "Default";
 
   public static void main(String[] args) {
-    int port = 8000;
-    String host = "localhost";
-
     // connect to server socket and open input stream
     try {
-      client = new Socket(host, port);
+      client = new Socket("localhost", 8000);
       serverMessage = new DataInputStream(client.getInputStream());
       clientMessage = new DataInputStream(new BufferedInputStream(System.in));
       output = new PrintStream(client.getOutputStream());

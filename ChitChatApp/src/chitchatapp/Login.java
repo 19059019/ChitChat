@@ -1,16 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package chitchatapp;
 
 import javax.swing.*;
 
-/**
- *
- * @author 20058837
- */
 public class Login extends javax.swing.JFrame {
 
     /**
@@ -108,11 +99,12 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, "Please enter your nickname");
         } else {
             nickname = tfNickname.getText();
+            //ClientPane.user = tfNickname.getText();
 
             //TODO: check if nickname is aready in use!
 //            ClientPane chat = new ClientPane();
 //            chat.setVisible(true);
-//            jPanel1.setVisible(false);
+            setVisible(false);
 //            chat.setTitle("ChitChat - " + nickname);
         }
     }//GEN-LAST:event_btnJoinActionPerformed
