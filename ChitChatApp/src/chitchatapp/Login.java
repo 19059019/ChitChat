@@ -70,7 +70,7 @@ public class Login extends javax.swing.JFrame {
                 .addGap(32, 32, 32))
         );
 
-        ImageIcon logo = new ImageIcon("/home/20058837/RW354/ChitChat/ChitChatApp/chitchat.png");
+        ImageIcon logo = new ImageIcon("/home/martin/Varsity/RW354/ChitChat/ChitChatApp/chitchat.png");
 
         lblLogo.setIcon(logo);
 

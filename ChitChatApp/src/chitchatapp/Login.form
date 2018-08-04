@@ -98,7 +98,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="lblLogo">
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="ImageIcon logo = new ImageIcon(&quot;/home/20058837/RW354/ChitChat/ChitChatApp/chitchat.png&quot;);&#xa;&#xa;        lblLogo.setIcon(logo);"/>
+            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="ImageIcon logo = new ImageIcon(&quot;/home/martin/Varsity/RW354/ChitChat/ChitChatApp/chitchat.png&quot;);&#xa;&#xa;        lblLogo.setIcon(logo);"/>
           </AuxValues>
         </Component>
       </SubComponents>

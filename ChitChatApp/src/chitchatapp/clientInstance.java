@@ -1,6 +1,6 @@
 package chitchatapp;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.io.DataInputStream;
 import java.io.PrintStream;
 import java.io.BufferedInputStream;
@@ -33,6 +33,7 @@ class clientInstance extends Thread {
         int clientLimit = this.clientLimit;
 
         Login lg = new Login();
+        
         lg.setVisible(true);
 
         try {
@@ -94,7 +95,7 @@ class clientInstance extends Thread {
             
             for (int i = 0; i < clientLimit; i++) {
                 if (clientThreads[i] != null && clientThreads[i] != this) {
-                    clientThreads[i].output.println(user + " Is no longer Where its at!");
+                    clientThreads[i].output.println(user + " Is no longer where it's at!");
                 }
             }
             

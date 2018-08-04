@@ -7,6 +7,8 @@ import java.io.PrintStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class ClientPane extends javax.swing.JFrame implements Runnable {
 
@@ -14,17 +16,20 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     private static DataInputStream serverMessage = null;
     private static DataInputStream clientMessage = null;
     private static PrintStream output = null;
+    public static String message = "";
     private static boolean status = true;
     public static String user = "Default";
 
     public void ClientPaneInit() {
         initComponents();
         setVisible(true);
-        setTitle("ChitChat - " + user);
+        setTitle("ChitChat");
     }
 
     public static void main(String[] args) {
         // connect to server socket and open input stream
+        
+        
         try {
             client = new Socket("localhost", 8000);
             serverMessage = new DataInputStream(client.getInputStream());
@@ -38,13 +43,14 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
 
         if (client != null && serverMessage != null && output != null) {
             try {
-                System.out.println("hello");
                 new Thread(new ClientPane()).start();
                 
-                //output.println(user + " Connected");
+                output.println(user + " Connected");
+                message = user + " Connected";
                 
                 while (status) {
                     output.println(clientMessage.readLine().trim());
+                    message = clientMessage.readLine().trim();
                 }
                 
                 output.close();
@@ -60,19 +66,31 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     public void run() {
         ClientPaneInit();
         messageListener();
+        taUpdate();
     }
 
     public void messageListener() {
-        String message;
+        String msg;
         
         try {
-            while ((message = serverMessage.readLine()) != null) {
-                System.out.println(message);
+            while ((msg = serverMessage.readLine()) != null) {
+                System.out.println(msg);
+                message = msg;
             }
             
             status = false;
         } catch (IOException e) {
             System.err.println(e);
+        }
+    }
+    
+    public void taUpdate() {
+        while (status) { 
+            System.out.println("taUpdate");
+            if (!message.equals("")) {
+                taChatArea.append(message);
+                message = "";
+            }
         }
     }
 
@@ -97,7 +115,6 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         btnGroup = new javax.swing.JButton();
         lblNumUsers = new javax.swing.JLabel();
         btnSend = new javax.swing.JButton();
-        btnLeave = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -105,20 +122,19 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         taChatArea.setColumns(20);
         taChatArea.setLineWrap(true);
         taChatArea.setRows(5);
-        taChatArea.setText("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
         jScrollPane1.setViewportView(taChatArea);
 
-        tfMessageInput.setText("Type your message here...");
+        tfMessageInput.setText("Type message here...");
+        tfMessageInput.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                tfMessageInputFocusGained(evt);
+            }
+        });
 
         lblTitle.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
 
         jLabel1.setText("Online Users:");
 
-        lstOnlineUsers.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         lstOnlineUsers.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 lstOnlineUsersValueChanged(evt);
@@ -151,8 +167,6 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
             }
         });
 
-        btnLeave.setText("Leave Chat");
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -168,18 +182,16 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
                             .addComponent(tfMessageInput))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(btnWhisper)
-                                .addComponent(btnGroup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel1)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(lblNumUsers))
-                                .addComponent(jScrollPane2)
-                                .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(btnLeave))
-                        .addContainerGap(12, Short.MAX_VALUE))))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnWhisper)
+                            .addComponent(btnGroup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblNumUsers))
+                            .addComponent(jScrollPane2)
+                            .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -201,16 +213,14 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnGroup)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tfMessageInput, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnLeave))
+                .addComponent(tfMessageInput, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSend)
                 .addContainerGap(9, Short.MAX_VALUE))
         );
 
         jScrollPane1.getAccessibleContext().setAccessibleName("");
-        ImageIcon logo = new ImageIcon("/home/20058837/RW354/ChitChat/ChitChatApp/chitchat.png");
+        ImageIcon logo = new ImageIcon("/home/martin/Varsity/RW354/ChitChat/ChitChatApp/chitchat.png");
 
         lblTitle.setIcon(logo);
 
@@ -234,11 +244,12 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
-        if (!tfMessageInput.getText().equals("")) {//maybe use some pattern matching using regex's?
-            String message = tfMessageInput.getText();
-            String name = Login.nickname;
-
-            //send stuff to server
+        if (!tfMessageInput.getText().equals("") && !tfMessageInput.getText().equals("Type message here...")) {
+            String msg = tfMessageInput.getText();
+            
+            output.println(msg);
+            message = msg;
+            tfMessageInput.setText("Type message here...");
         }
     }//GEN-LAST:event_btnSendActionPerformed
 
@@ -255,9 +266,12 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         btnGroup.setEnabled(false);
     }//GEN-LAST:event_btnGroupActionPerformed
 
+    private void tfMessageInputFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfMessageInputFocusGained
+        tfMessageInput.setText("");
+    }//GEN-LAST:event_tfMessageInputFocusGained
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGroup;
-    private javax.swing.JButton btnLeave;
     private javax.swing.JButton btnSend;
     private javax.swing.JButton btnWhisper;
     private javax.swing.JLabel jLabel1;
@@ -270,4 +284,6 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     private javax.swing.JTextArea taChatArea;
     private javax.swing.JTextField tfMessageInput;
     // End of variables declaration//GEN-END:variables
+
+    
 }
