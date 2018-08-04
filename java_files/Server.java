@@ -2,18 +2,19 @@ import java.io.DataInputStream;
 import java.io.PrintStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 import java.net.Socket;
 import java.net.ServerSocket;
 
 public class Server {
   private static ServerSocket server = null;
   private static Socket client = null;
-  private static DataInputStream serverMessage = null;
-  private static DataInputStream clientMessage = null;
-  private static PrintStream output = null;
   private static final int clientLimit = 5;
   private static final clientInstance[] clientThreads = new clientInstance[clientLimit];
+  private static PrintStream output = null;
   private static Boolean status = true;
+  private static ArrayList<String> userNames = new ArrayList<String>();
 
   public static void main(String[] args) {
     int port = 8000;
@@ -32,7 +33,7 @@ public class Server {
         client = server.accept();
         for (i = 0; i < clientLimit; i++) {
           if (clientThreads[i] == null) {
-            clientThreads[i] = new clientInstance(client, clientThreads);
+            clientThreads[i] = new clientInstance(client, clientThreads, userNames);
             clientThreads[i].start();
             break;
           }
