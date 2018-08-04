@@ -8,9 +8,11 @@ import java.net.ServerSocket;
 public class Server {
   private static ServerSocket server = null;
   private static Socket client = null;
+  private static DataInputStream serverMessage = null;
+  private static DataInputStream clientMessage = null;
+  private static PrintStream output = null;
   private static final int clientLimit = 5;
   private static final clientInstance[] clientThreads = new clientInstance[clientLimit];
-  private static PrintStream output = null;
   private static Boolean status = true;
 
   public static void main(String[] args) {
@@ -26,7 +28,7 @@ public class Server {
     // create new socket for each new client that attempts to connect
     while (status) {
       int i;
-      try{
+      try {
         client = server.accept();
         for (i = 0; i < clientLimit; i++) {
           if (clientThreads[i] == null) {

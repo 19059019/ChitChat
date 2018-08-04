@@ -5,6 +5,14 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
 
+/*
+* TODO:
+*   Change DataInputStreams to buffered readers
+*   Print recieved data to server
+*   Sort out Sync issues
+* 
+* 
+*/
 class clientInstance extends Thread {
 
   private DataInputStream is = null;
