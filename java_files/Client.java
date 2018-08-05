@@ -3,6 +3,7 @@ import java.io.ObjectInputStream;
 import java.io.PrintStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -12,7 +13,6 @@ public class Client implements Runnable {
   private static Socket client =  null;
   private static DataInputStream serverMessage = null;
   private static DataInputStream clientMessage = null;
-  private static ObjectInputStream objectInput = null;
   private static PrintStream output = null;
   private static boolean status = true;
   private static String user = "Default";
@@ -22,18 +22,18 @@ public class Client implements Runnable {
   public static void main(String[] args) {
     int port = 8000;
     String host = "localhost";
+    host = JOptionPane.showInputDialog("Enter host IP:");
 
     // connect to server socket and open input stream
     try {
       client = new Socket(host, port);
       serverMessage = new DataInputStream(client.getInputStream());
-      objectInput = new ObjectInputStream(client.getInputStream());
       clientMessage = new DataInputStream(new BufferedInputStream(System.in));
       output = new PrintStream(client.getOutputStream());
     } catch (UnknownHostException e) {
       System.err.println(e);
     } catch(IOException e) {
-      System.err.println(e);
+      System.err.println(e + "Hey");
     }
 
     if (client != null && serverMessage != null && output != null) {

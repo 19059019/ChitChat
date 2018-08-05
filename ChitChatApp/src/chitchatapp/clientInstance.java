@@ -3,12 +3,8 @@ package chitchatapp;
 import javax.swing.*;
 import java.io.DataInputStream;
 import java.io.PrintStream;
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.ServerSocket;
-import java.util.Collections;
-import java.util.List;
 import java.util.ArrayList;
 import java.sql.Timestamp;
 
@@ -79,8 +75,12 @@ class clientInstance extends Thread {
             lg.dispose();
 
             for (int i = 0; i < clientLimit; i++) {
+                String message = "*userNames*##";
+                String users = listToString(userNames);
                 if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
-                    clientThreads[i].output.println(user + " is now where its at!");
+                    message += user + " is now where its at!" + users;
+                    System.out.println(message);
+                    clientThreads[i].output.println(message);
                 }
             }
 
@@ -103,17 +103,16 @@ class clientInstance extends Thread {
 
             synchronized (this) {
                 userNames.remove(user);
-                System.out.println(userNames.indexOf(user));
             }
 
             for (int i = 0; i < clientLimit; i++) {
+                String message = "*userNames*##";
+                String users = listToString(userNames);
                 if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
+                    message += user + " Is no longer where it's at!" + users;
                     clientThreads[i].output.println(user + " Is no longer where it's at!");
                 }
             }
-
-            output.println("You are leaving ChitChat!\nDisconnecting...");
-
             /*
        * Clean up. Set the current thread variable to null so that a new client
        * could be accepted by the server.
@@ -129,5 +128,11 @@ class clientInstance extends Thread {
             client.close();
         } catch (IOException e) {
         }
+    }
+    
+    private String listToString (ArrayList<String> input) {
+        String out = "";
+        out = input.stream().map((name) -> "##" + name).reduce(out, String::concat);
+        return out;
     }
 }

@@ -7,8 +7,9 @@ import java.io.PrintStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 class ClientPane extends javax.swing.JFrame implements Runnable {
 
@@ -18,6 +19,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     private static PrintStream output = null;
     private static boolean status = true;
     public static String user = "Default";
+    public static ArrayList<String> userNames;
 
     public void ClientPaneInit() {
         initComponents();
@@ -27,9 +29,11 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
 
     public static void main(String[] args) {
         // connect to server socket and open input stream
+        String host = "localhost";
+        int port = 8000;
 
         try {
-            client = new Socket("localhost", 8000);
+            client = new Socket(host, port);
             serverMessage = new DataInputStream(client.getInputStream());
             clientMessage = new DataInputStream(new BufferedInputStream(System.in));
             output = new PrintStream(client.getOutputStream());
@@ -42,23 +46,20 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         if (client != null && serverMessage != null && output != null) {
             try {
                 new Thread(new ClientPane()).start();
-
-                output.println(user + " Connected\n");
-
+                                
                 while (status) {
                     String message = clientMessage.readLine().trim();
-                    output.println(message);
-
                     if (message.startsWith("EXIT")) {
-                        System.out.println("Cheerio!");
                         break;
                     }
+                    output.println(message);
                 }
-
+                System.out.println("Cheerio!");
                 output.close();
                 clientMessage.close();
                 serverMessage.close();
                 client.close();
+                // Also kill the frame here
                 System.exit(0);
             } catch (IOException e) {
                 System.err.println(e);
@@ -76,13 +77,21 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
 
         try {
             while ((message = serverMessage.readLine()) != null) {
+                if (message.startsWith("*userNames*")) {
+                    userNames = new ArrayList<>(Arrays.asList(message.split("##")));
+                    message = userNames.get(1);
+                    userNames.remove(1);
+                    userNames.remove(0);
+                    if (user.equals("Default")) {
+                        user = userNames.get(userNames.size() - 1);
+                    }
+                }
                 System.out.println(message);
                 taChatArea.append("\n" + message);
             }
 
             status = false;
         } catch (IOException e) {
-            System.err.println(e);
             System.out.println("Disconnected!");
         }
     }

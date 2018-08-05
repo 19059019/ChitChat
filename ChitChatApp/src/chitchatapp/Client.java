@@ -38,12 +38,18 @@ public class Client implements Runnable {
         new Thread(new Client()).start();
 
         while (status) {
-          output.println(clientMessage.readLine().trim());
+          String message =  clientMessage.readLine().trim();
+          output.println(message);
+          if (message.startsWith("EXIT")) {
+            System.out.println("Cheerio!");
+            break;
+          }
         }
         output.close();
         clientMessage.close();
         serverMessage.close();
         client.close();
+        System.exit(0);
       } catch(IOException e) {
         System.err.println(e);
       }
@@ -58,7 +64,10 @@ public class Client implements Runnable {
   public void messageListener() {
     String message;
     try {
-      while ((message = serverMessage.readLine()) != null) {
+      while ((message = serverMessage.readLine().trim()) != null) {
+        if (message.startsWith("*userNames*")) {
+            
+        }
         System.out.println(message);
       }
         status = false;
