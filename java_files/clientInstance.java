@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 *   Change DataInputStreams to buffered readers maybe
 *   Print recieved data to server
 *   Sort out Sync issues
-* 
+*
 */
 class clientInstance extends Thread {
 
@@ -46,19 +46,20 @@ class clientInstance extends Thread {
 
 
       String user = clientMessage.readLine().trim();
+
       //TODO: deal with duplicate usernames
       if (!userNames.isEmpty()) {
         System.out.println("Checking For Duplicate Names");
-        while (!userNames.contains(user)) {
+        while (userNames.contains(user)) {
           output.println(user + " is already taken, please select a new Username");
-          user = clientMessage.readLine().trim();        
+          user = clientMessage.readLine().trim();
         }
       }
-      
+
       synchronized (this) {
         userNames.add(user);
       }
-      
+
 
       output.println("Welcome to Chit Chat, it's where its at!\n To leave the chatroom"
                       +" send \'EXIT\'");
