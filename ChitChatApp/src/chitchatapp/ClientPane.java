@@ -7,12 +7,8 @@ import java.io.PrintStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 class ClientPane extends javax.swing.JFrame implements Runnable {
 
@@ -22,7 +18,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     private static PrintStream output = null;
     private static boolean status = true;
     public static String user = "Default";
-    public static Vector<String> userNames = new Vector<String>();
+    public static Vector<String> userNames = new Vector<>();
 
     public void ClientPaneInit() {
         initComponents();
@@ -80,6 +76,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         }
     }
 
+    @Override
     public void run() {
         ClientPaneInit();
         messageListener();

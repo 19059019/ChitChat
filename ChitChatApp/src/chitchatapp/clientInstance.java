@@ -13,7 +13,7 @@ class clientInstance extends Thread {
     private DataInputStream clientMessage = null;
     private PrintStream output = null;
     private Socket client = null;
-    private final clientInstance[] clientThreads;
+    private clientInstance[] clientThreads;
     private int clientLimit;
     private ArrayList<String> userNames;
 
@@ -24,6 +24,7 @@ class clientInstance extends Thread {
         clientLimit = clientThreads.length;
     }
 
+    @Override
     public void run() {
         clientInstance[] clientThreads = this.clientThreads;
         int clientLimit = this.clientLimit;
