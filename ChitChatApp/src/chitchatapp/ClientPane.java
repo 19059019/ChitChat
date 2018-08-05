@@ -64,6 +64,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
                     }
                     output.println(message);
                 }
+                
                 System.out.println("Cheerio!");
                 output.close();
                 clientMessage.close();
@@ -102,6 +103,8 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
                 
                 System.out.println(message);
                 taChatArea.append("\n" + message);
+                lstOnlineUsers.setListData(userNames);
+                lblNumUsers.setText(userNames.size() + "");
             }
 
             status = false;
@@ -140,7 +143,6 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         taChatArea.setRows(5);
         jScrollPane1.setViewportView(taChatArea);
 
-        tfMessageInput.setText("Type message here...");
         tfMessageInput.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 tfMessageInputFocusGained(evt);
@@ -260,13 +262,13 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
-        if (!tfMessageInput.getText().equals("") && !tfMessageInput.getText().equals("Type message here...")) {
+        if (!tfMessageInput.getText().equals("") /*&& !tfMessageInput.getText().equals("Type message here...")*/) {
             String msg = tfMessageInput.getText();
 
             output.println(msg);
             
             if (msg.startsWith("EXIT")) {
-                tfMessageInput.setText("Cheerio!");
+                //tfMessageInput.setText("Cheerio!");
                 try {
                     output.close();
                     clientMessage.close();
@@ -278,7 +280,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
                 }
             }
 
-            tfMessageInput.setText("Type message here...");
+            tfMessageInput.setText("");
         }
     }//GEN-LAST:event_btnSendActionPerformed
 
@@ -296,7 +298,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_btnGroupActionPerformed
 
     private void tfMessageInputFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfMessageInputFocusGained
-        tfMessageInput.setText("");
+        //tfMessageInput.setText("");
     }//GEN-LAST:event_tfMessageInputFocusGained
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

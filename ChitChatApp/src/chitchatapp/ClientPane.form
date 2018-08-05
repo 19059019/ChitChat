@@ -129,9 +129,6 @@
           </SubComponents>
         </Container>
         <Component class="javax.swing.JTextField" name="tfMessageInput">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Type message here..."/>
-          </Properties>
           <Events>
             <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="tfMessageInputFocusGained"/>
           </Events>

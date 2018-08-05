@@ -32,7 +32,6 @@ class clientInstance extends Thread {
 //        Login lg = new Login();
 //
 //        lg.setVisible(true);
-
         try {
             /*
        * Create input and output streams for this client.
@@ -50,21 +49,22 @@ class clientInstance extends Thread {
 //                System.out.print("");
 //                //System.out.println("user = " + ClientPane.user);
 //            }
+            String user = "";
 
-        String user = "";
-        
-        while (user.equals("")) {
-            user = JOptionPane.showInputDialog("Please enter your nickname");
-            
-            if (user == null) {
-                System.exit(0);
-            }
-        }
-         //Check for duplicate usernames
-            if (!userNames.isEmpty()) {
-                while (userNames.contains(user)) {
-                    user = JOptionPane.showInputDialog("Nickname already in "
-                            + "use!\n Please enter a unique nickname.");
+            while (user.equals("")) {
+                user = JOptionPane.showInputDialog("Please enter your nickname");
+
+                if (user == null) {
+                    System.exit(0);
+                }
+
+                //Check for duplicate usernames
+                if (!userNames.isEmpty()) {
+                    if (userNames.contains(user)) {
+                        user = "";
+                        JOptionPane.showMessageDialog(null, "Nickname already in "
+                                + "use!\n Please enter a unique nickname.");
+                    }
                 }
             }
 
@@ -73,18 +73,16 @@ class clientInstance extends Thread {
             }
 
             output.println("Welcome to Chit Chat, it's where its at!"
-                    + "\n To leave the chatroom send \'EXIT\'");            
-            //JOptionPane.showMessageDialog(null, "Welcome to Chit Chat, it's where its at!\n To leave the chatroom send \'EXIT\'");
-            
+                    + "\n To leave the chatroom send \'EXIT\'");
+
             Timestamp stamp = new Timestamp(System.currentTimeMillis());
             System.out.println(user + " Joined: " + stamp);
 
             //lg.dispose();
-
             for (int i = 0; i < clientLimit; i++) {
                 String message = "*userNames*##";
                 String users = listToString(userNames);
-                if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
+                if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {
                     message += user + " is now where its at!" + users;
                     System.out.println(message);
                     clientThreads[i].output.println(message);
@@ -115,7 +113,7 @@ class clientInstance extends Thread {
             for (int i = 0; i < clientLimit; i++) {
                 String message = "*userNames*##";
                 String users = listToString(userNames);
-                if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
+                if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {
                     message += user + " Is no longer where it's at!" + users;
                     System.out.println(message);
                     clientThreads[i].output.println(message);
@@ -138,11 +136,10 @@ class clientInstance extends Thread {
         }
 
     }
-    
-    private String listToString (ArrayList<String> input) {
+
+    private String listToString(ArrayList<String> input) {
         String out = "";
         out = input.stream().map((name) -> "##" + name).reduce(out, String::concat);
         return out;
     }
-
 }

@@ -1,7 +1,5 @@
 package chitchatapp;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 
 public class Login extends javax.swing.JFrame {

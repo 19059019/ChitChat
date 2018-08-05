@@ -1,10 +1,7 @@
 package chitchatapp;
 
-import java.io.DataInputStream;
 import java.io.PrintStream;
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
 import java.net.Socket;
 import java.net.ServerSocket;
@@ -16,7 +13,7 @@ public class Server {
     private static final clientInstance[] clientThreads = new clientInstance[clientLimit];
     private static PrintStream output = null;
     private static Boolean status = true;
-    private static ArrayList<String> userNames = new ArrayList<String>();
+    private static ArrayList<String> userNames = new ArrayList<>();
 
     public static void main(String[] args) {
         // open ServerSocket
