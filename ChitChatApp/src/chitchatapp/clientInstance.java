@@ -63,6 +63,7 @@ class clientInstance extends Thread {
             if (!userNames.isEmpty()) {
                 if (userNames.contains(user)) {
                     user = "";
+                    JOptionPane.showMessageDialog(null, "Nickname already in use! Please enter a unique nickname.");
                 }
             }
         }
@@ -79,7 +80,8 @@ class clientInstance extends Thread {
                 userNames.add(user);
             }
 
-            output.println("Welcome to Chit Chat, it's where its at!\n To leave the chatroom send \'EXIT\'");            
+            output.println("Welcome to Chit Chat, it's where its at!"
+                    + "\n To leave the chatroom send \'EXIT\'");            
             //JOptionPane.showMessageDialog(null, "Welcome to Chit Chat, it's where its at!\n To leave the chatroom send \'EXIT\'");
             
             Timestamp stamp = new Timestamp(System.currentTimeMillis());
@@ -123,6 +125,7 @@ class clientInstance extends Thread {
                 String users = listToString(userNames);
                 if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
                     message += user + " Is no longer where it's at!" + users;
+                    System.out.println(message);
                     clientThreads[i].output.println(user + " Is no longer where it's at!");
                 }
             }

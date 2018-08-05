@@ -25,7 +25,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     public void ClientPaneInit() {
         initComponents();
         setVisible(true);
-        setTitle("ChitChat - " + user);
+        setTitle("ChitChat");
     }
 
     public static void main(String[] args) {
@@ -97,6 +97,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
                     
                     if (user.equals("Default")) {
                         user = userNames.get(userNames.size() - 1);
+                        setTitle("ChitChat - " + user);
                     }
                 }
                 
