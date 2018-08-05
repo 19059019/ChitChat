@@ -1,0 +1,45 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+
+\begin{document}
+
+\title{Tutorial 1 Report}
+\author{M Shepherd, 19059019; M von Fintel, 20058837}
+\date{8 August 2018}
+
+\maketitle
+\newpage
+
+\section{Project Description}
+
+This project was to implement a single server, multiple client chat program.
+Many clients can connect to the server and can chat, that being send messages to
+all the other clients connected to the server. What follows is a brief, consise
+description of the different parts of the project.
+
+\subsection{The Server}
+
+The server handles all the incoming messages sent from clients and sends them on
+to all the other clients. It creates a ServerSocket on port 8000. It continually
+listens for new clients to connect and creates a new socket each time someone
+does. It is therefore a multi-threaded implementation. More will be said on this when the client side is discussed. There is a limit to the amount of clients that can join (REASON?). This is currently set at ten clients. If the chatroom is full, i.e. there are already ten clients, the new client will be warned with an appropriate message and will be shutdown.
+
+\subsection{The Client}
+
+The client runs behind a GUI. The GUI has text areas for the chat and message
+composing. A list of online users is also displayed. When a client first
+connects to the server, the client has to input a username. A separate
+JFrame is used for this that dissapears once the username is inputted. 
+
+\section{Features}
+
+\subsection{Included Features}
+
+\subsection{Not Included Features}
+
+\subsection{Extra Features}
+
+\section{Algorithms and Data Structures Used}
+
+\end{document}

@@ -1,82 +1,131 @@
 package chitchatapp;
 
+import javax.swing.*;
+
 import java.io.DataInputStream;
 import java.io.PrintStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+import java.sql.Timestamp;
 
 class clientInstance extends Thread {
 
-  private DataInputStream is = null;
-  private PrintStream output = null;
-  private Socket client = null;
-  private final clientInstance[] clientThreads;
-  private int clientLimit;
+    private DataInputStream clientMessage = null;
+    private PrintStream output = null;
+    private Socket client = null;
+    private final clientInstance[] clientThreads;
+    private int clientLimit;
+    private ArrayList<String> userNames;
 
-  public clientInstance(Socket client, clientInstance[] clientThreads) {
-    this.client = client;
-    this.clientThreads = clientThreads;
-    clientLimit = clientThreads.length;
-  }
+    public clientInstance(Socket client, clientInstance[] clientThreads, ArrayList<String> userNames) {
+        this.client = client;
+        this.clientThreads = clientThreads;
+        this.userNames = userNames;
+        clientLimit = clientThreads.length;
+    }
 
-  public void run() {
-    clientInstance[] clientThreads = this.clientThreads;
-    int clientLimit = this.clientLimit;
+    public void run() {
+        clientInstance[] clientThreads = this.clientThreads;
+        int clientLimit = this.clientLimit;
 
-    try {
-      /*
+        Login lg = new Login();
+        
+        lg.setVisible(true);
+
+        try {
+            /*
        * Create input and output streams for this client.
-       */
-      is = new DataInputStream(client.getInputStream());
-      output = new PrintStream(client.getOutputStream());
-      output.println("Enter your name.");
-      String name = is.readLine().trim();
-      output.println("Hello " + name
-          + " to our chat room.\nTo leave enter /quit in a new line");
-      for (int i = 0; i < clientLimit; i++) {
-        if (clientThreads[i] != null && clientThreads[i] != this) {
-          clientThreads[i].output.println("*** A new user " + name
-              + " entered the chat room !!! ***");
-        }
-      }
-      while (true) {
-        String line = is.readLine();
-        if (line.startsWith("/quit")) {
-          break;
-        }
-        for (int i = 0; i < clientLimit; i++) {
-          if (clientThreads[i] != null) {
-            clientThreads[i].output.println("<" + name + "&gr; " + line);
-          }
-        }
-      }
-      for (int i = 0; i < clientLimit; i++) {
-        if (clientThreads[i] != null && clientThreads[i] != this) {
-          clientThreads[i].output.println("*** The user " + name
-              + " is leaving the chat room !!! ***");
-        }
-      }
-      output.println("*** Bye " + name + " ***");
+             */
+            clientMessage = new DataInputStream(client.getInputStream());
+            output = new PrintStream(client.getOutputStream());
+            //output.println("Enter your name.");
+            String name = "";
 
-      /*
+            while (name.equals("")) {
+                name = lg.toString();//chose which one of these to use
+                //ClientPane.user = name;
+                //System.out.println("lg.toString = " + name);
+                //System.out.println("user = " + ClientPane.user);
+            }
+
+            //String user = clientMessage.readLine().trim();
+            String user = name;
+            
+            //TODO: deal with duplicate usernames
+            if (!userNames.isEmpty()) {
+                System.out.println("Checking For Duplicate Names");
+                while (userNames.contains(user)) {
+                    output.println(user + " is already taken, please select a new Username");
+                    user = clientMessage.readLine().trim();
+                }
+            }
+
+            synchronized (this) {
+                userNames.add(user);
+            }
+
+            //output.println("Welcome to Chit Chat, it's where its at!\n To leave the chatroom send \'EXIT\'");            
+            JOptionPane.showMessageDialog(null, "Welcome to Chit Chat, it's where its at!\n To leave the chatroom send \'EXIT\'");
+
+            Timestamp stamp = new Timestamp(System.currentTimeMillis());
+            System.out.println(user + " Joined: " + stamp);
+
+            lg.dispose();
+
+            for (int i = 0; i < clientLimit; i++) {
+                if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
+                    clientThreads[i].output.println(user + " is now where its at!\n");
+                }
+            }
+
+            while (true) {
+                String line = clientMessage.readLine();
+                if (line.startsWith("EXIT")) {
+                    break;
+                }
+
+                for (int i = 0; i < clientLimit; i++) {
+                    if (clientThreads[i] != null) {
+                        clientThreads[i].output.println(user + ": " + line + "\n");
+                    }
+                }
+            }
+            
+            for (int i = 0; i < clientLimit; i++) {
+                if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
+                    clientThreads[i].output.println(user + " Is no longer where it's at!\n");
+                }
+            }
+            
+            output.println("You are leaving ChitChat!\nDisconnecting...\n");
+
+            // remove user from list of usernames
+            synchronized (this) {
+                userNames.remove(user);
+                System.out.println(userNames.indexOf(user));
+            }
+
+            clientMessage.close();
+            output.close();
+            client.close();
+
+            /*
        * Clean up. Set the current thread variable to null so that a new client
        * could be accepted by the server.
-       */
-      for (int i = 0; i < clientLimit; i++) {
-        if (clientThreads[i] == this) {
-          clientThreads[i] = null;
-        }
-      }
+             */
+            for (int i = 0; i < clientLimit; i++) {
+                if (clientThreads[i] == this) {
+                    clientThreads[i] = null;
+                }
+            }
 
-      /*
-       * Close the output stream, close the input stream, close the socket.
-       */
-      is.close();
-      output.close();
-      client.close();
-    } catch (IOException e) {
+        } catch (IOException e) {
+        }
     }
-  }
 }
+

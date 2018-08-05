@@ -1,26 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package chitchatapp;
 
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
-/**
- *
- * @author 20058837
- */
-public class login extends javax.swing.JFrame {
+public class Login extends javax.swing.JFrame {
 
     /**
      * Creates new form login
      */
-    public login() {
+    public Login() {
         initComponents();
     }
-    
-    public static String nickname;
+
+    public static String nickname = "";
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -105,15 +102,16 @@ public class login extends javax.swing.JFrame {
 
     private void btnJoinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJoinActionPerformed
         if (tfNickname.getText().equals("")) {
-            JOptionPane.showMessageDialog(rootPane, "Please enter a nickname");
+            JOptionPane.showMessageDialog(rootPane, "Please enter your nickname");
         } else {
             nickname = tfNickname.getText();
-            
+            //ClientPane.user = tfNickname.getText();
+
             //TODO: check if nickname is aready in use!
-            client chat = new client();
-            chat.setVisible(true);
-            jPanel1.setVisible(false);
-            chat.setTitle("ChitChat - " + nickname);
+//            ClientPane chat = new ClientPane();
+//            chat.setVisible(true);
+            setVisible(false);
+//            chat.setTitle("ChitChat - " + nickname);
         }
     }//GEN-LAST:event_btnJoinActionPerformed
 
@@ -134,24 +132,31 @@ public class login extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new login().setVisible(true);
+                new Login().setVisible(true);
             }
         });
-        
+
     }
+
+    @Override
+    public String toString() {
+        return nickname;
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnJoin;
