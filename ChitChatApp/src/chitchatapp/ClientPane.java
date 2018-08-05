@@ -1,25 +1,103 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package chitchatapp;
 
+import java.awt.Image;
+import java.io.BufferedInputStream;
 import javax.swing.*;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.PrintStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
-/**
- *
- * @author 20058837
- */
-public class client extends javax.swing.JFrame {
+class ClientPane extends javax.swing.JFrame implements Runnable {
 
-    /**
-     * Creates new form client
-     */
-    public client() {
+    private static Socket client = null;
+    private static DataInputStream serverMessage = null;
+    private static DataInputStream clientMessage = null;
+    private static PrintStream output = null;
+    public static String message = "";
+    private static boolean status = true;
+    public static String user = "Default";
+
+    public void ClientPaneInit() {
         initComponents();
+        setVisible(true);
+        setTitle("ChitChat");
+    }
+
+    public static void main(String[] args) {
+        // connect to server socket and open input stream
+        
+        
+        try {
+            client = new Socket("localhost", 8000);
+            serverMessage = new DataInputStream(client.getInputStream());
+            clientMessage = new DataInputStream(new BufferedInputStream(System.in));
+            output = new PrintStream(client.getOutputStream());
+        } catch (UnknownHostException e) {
+            System.err.println(e);
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+
+        if (client != null && serverMessage != null && output != null) {
+            try {
+                new Thread(new ClientPane()).start();
+                
+                output.println(user + " Connected\n");
+                //message = user + " Connected";
+                
+                while (status) {
+                    output.println(clientMessage.readLine().trim());
+                    //message = clientMessage.readLine().trim();
+                }
+                
+                output.close();
+                clientMessage.close();
+                serverMessage.close();
+                client.close();
+            } catch (IOException e) {
+                System.err.println(e);
+            }
+        }
+    }
+
+    public void run() {
+        ClientPaneInit();
+        messageListener();
+        //taUpdate();
+    }
+
+    public void messageListener() {
+        String msg;
+        
+        try {
+            while ((msg = serverMessage.readLine()) != null) {
+                System.out.println(msg);
+                taChatArea.append("\n" + msg);
+                //message = msg;
+            }
+            
+            status = false;
+        } catch (IOException e) {
+            System.err.println(e);
+        }
     }
     
+//    public void taUpdate() {
+//        while (status) { 
+//            System.out.println("taUpdate");
+//            if (!message.equals("")) {
+//                taChatArea.append(message);
+//                message = "";
+//            }
+//        }
+//    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -48,20 +126,19 @@ public class client extends javax.swing.JFrame {
         taChatArea.setColumns(20);
         taChatArea.setLineWrap(true);
         taChatArea.setRows(5);
-        taChatArea.setText("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
         jScrollPane1.setViewportView(taChatArea);
 
-        tfMessageInput.setText("Type your message here...");
+        tfMessageInput.setText("Type message here...");
+        tfMessageInput.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                tfMessageInputFocusGained(evt);
+            }
+        });
 
         lblTitle.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
 
         jLabel1.setText("Online Users:");
 
-        lstOnlineUsers.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         lstOnlineUsers.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 lstOnlineUsersValueChanged(evt);
@@ -118,7 +195,7 @@ public class client extends javax.swing.JFrame {
                                 .addComponent(lblNumUsers))
                             .addComponent(jScrollPane2)
                             .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap(12, Short.MAX_VALUE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -171,11 +248,12 @@ public class client extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
-        if (!tfMessageInput.getText().equals("")) {//maybe use some pattern matching using regex's?
-            String message = tfMessageInput.getText();
-            String name = login.nickname;
+        if (!tfMessageInput.getText().equals("") && !tfMessageInput.getText().equals("Type message here...")) {
+            String msg = tfMessageInput.getText();
             
-            //send stuff to server
+            output.println(msg);
+            //message = msg;
+            tfMessageInput.setText("Type message here...");
         }
     }//GEN-LAST:event_btnSendActionPerformed
 
@@ -192,40 +270,9 @@ public class client extends javax.swing.JFrame {
         btnGroup.setEnabled(false);
     }//GEN-LAST:event_btnGroupActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(client.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new client().setVisible(true);
-            }
-        });
-    }
+    private void tfMessageInputFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfMessageInputFocusGained
+        tfMessageInput.setText("");
+    }//GEN-LAST:event_tfMessageInputFocusGained
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGroup;
@@ -241,4 +288,6 @@ public class client extends javax.swing.JFrame {
     private javax.swing.JTextArea taChatArea;
     private javax.swing.JTextField tfMessageInput;
     // End of variables declaration//GEN-END:variables
+
+    
 }

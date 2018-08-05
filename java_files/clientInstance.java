@@ -1,5 +1,6 @@
 import java.io.DataInputStream;
 import java.io.PrintStream;
+import java.io.ObjectOutputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -14,11 +15,12 @@ import java.sql.Timestamp;
 *   Change DataInputStreams to buffered readers maybe
 *   Print recieved data to server
 *   Sort out Sync issues
-* 
+*
 */
 class clientInstance extends Thread {
 
   private DataInputStream clientMessage = null;
+  private ObjectOutputStream objectOutput = null;
   private PrintStream output = null;
   private Socket client = null;
   private final clientInstance[] clientThreads;
@@ -41,24 +43,25 @@ class clientInstance extends Thread {
        * Create input and output streams for this client.
        */
       clientMessage = new DataInputStream(client.getInputStream());
+      objectOutput = new ObjectOutputStream(client.getOutputStream());
       output = new PrintStream(client.getOutputStream());
       output.println("Please Enter a Username");
 
 
       String user = clientMessage.readLine().trim();
+
       //TODO: deal with duplicate usernames
       if (!userNames.isEmpty()) {
-        System.out.println("Checking For Duplicate Names");
-        while (!userNames.contains(user)) {
+        while (userNames.contains(user)) {
           output.println(user + " is already taken, please select a new Username");
-          user = clientMessage.readLine().trim();        
+          user = clientMessage.readLine().trim();
         }
       }
-      
+
       synchronized (this) {
         userNames.add(user);
       }
-      
+
 
       output.println("Welcome to Chit Chat, it's where its at!\n To leave the chatroom"
                       +" send \'EXIT\'");
@@ -66,7 +69,8 @@ class clientInstance extends Thread {
       System.out.println(user+" Joined: "+stamp);
 
       // Notifies All current connections of new user
-      for (int i = 0; i < clientLimit; i++) {
+
+for (int i = 0; i < clientLimit; i++) {
         if (clientThreads[i] != null && clientThreads[i] != this) {
           clientThreads[i].output.println(user + " is now where its at!");
         }
@@ -83,23 +87,20 @@ class clientInstance extends Thread {
           }
         }
       }
-      for (int i = 0; i < clientLimit; i++) {
-        if (clientThreads[i] != null && clientThreads[i] != this) {
-          clientThreads[i].output.println(user + " Is no longer Where its at!");
-        }
-      }
-      output.println("You are leaving ChitChat!\nDisconnecting...");
 
       // remove user from list of usernames
+      stamp = new Timestamp(System.currentTimeMillis());
+      System.out.println(user + " Disconnected: " + stamp);
       synchronized (this) {
         userNames.remove(user);
         System.out.println(userNames.indexOf(user));
       }
 
-      clientMessage.close();
-      output.close();
-      client.close();
-
+      for (int i = 0; i < clientLimit; i++) {
+        if (clientThreads[i] != null && clientThreads[i] != this) {
+          clientThreads[i].output.println(user + " Is no longer Where its at!");
+        }
+      }
       /*
        * Clean up. Set the current thread variable to null so that a new client
        * could be accepted by the server.
@@ -109,7 +110,9 @@ class clientInstance extends Thread {
           clientThreads[i] = null;
         }
       }
-
+      clientMessage.close();
+      output.close();
+      client.close();
     } catch (IOException e) {
     }
   }

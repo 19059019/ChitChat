@@ -42,7 +42,7 @@ public class Server {
         // Message if too many clients have connected
         if (i == clientLimit) {
           output = new PrintStream(client.getOutputStream());
-          output.println("Chit Chat Chatroom full, Unlucky!");
+          output.println("ChitChat Chatroom full, Unlucky!");
           output.close();
           client.close();
         }

@@ -1,46 +1,55 @@
 package chitchatapp;
+
 import java.io.DataInputStream;
 import java.io.PrintStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 import java.net.Socket;
 import java.net.ServerSocket;
 
 public class Server {
-  public static void main(String args[]) {
+    private static ServerSocket server = null;
+    private static Socket client = null;
+    private static final int clientLimit = 5;
+    private static final clientInstance[] clientThreads = new clientInstance[clientLimit];
+    private static PrintStream output = null;
+    private static Boolean status = true;
+    private static ArrayList<String> userNames = new ArrayList<String>();
 
-    ServerSocket echoServer = null;
-    String line;
-    DataInputStream is;
-    PrintStream os;
-    Socket clientSocket = null;
+    public static void main(String[] args) {
+        // open ServerSocket
+        try {
+            server = new ServerSocket(8000);
+        } catch (IOException e) {
+            System.err.println(e);
+        }
 
-    /*
-     * Open a server socket on port 2222. Note that we can't choose a port less
-     * than 1023 if we are not privileged users (root).
-     */
-    try {
-      echoServer = new ServerSocket(2222);
-    } catch (IOException e) {
-      System.out.println(e);
+        // create new socket for each new client that attempts to connect
+        while (status) {
+            int i;
+            try {
+                client = server.accept();
+                for (i = 0; i < clientLimit; i++) {
+                    if (clientThreads[i] == null) {
+                        clientThreads[i] = new clientInstance(client, clientThreads, userNames);
+                        clientThreads[i].start();
+                        break;
+                    }
+                }
+
+                // Message if too many clients have connected
+                if (i == clientLimit) {
+                    output = new PrintStream(client.getOutputStream());
+                    output.println("ChitChat chatroom full, unlucky!");
+                    output.close();
+                    client.close();
+                }
+                
+            } catch (IOException e) {
+                System.err.println(e);
+            }
+        }
     }
-
-    /*
-     * Create a socket object from the ServerSocket to listen to and accept
-     * connections. Open input and output streams.
-     */
-    System.out.println("The server started. To stop it press <CTRL><C>.");
-    try {
-      clientSocket = echoServer.accept();
-      is = new DataInputStream(clientSocket.getInputStream());
-      os = new PrintStream(clientSocket.getOutputStream());
-
-      /* As long as we receive data, echo that data back to the client. */
-      while (true) {
-        line = is.readLine();
-        os.println("From server: " + line);
-      }
-    } catch (IOException e) {
-      System.out.println(e);
-    }
-  }
 }
