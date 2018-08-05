@@ -24,16 +24,24 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     public void ClientPaneInit() {
         initComponents();
         setVisible(true);
-        setTitle("ChitChat");
+        setTitle("ChitChat - " + user);
     }
 
     public static void main(String[] args) {
         // connect to server socket and open input stream
-        String host = "localhost";
-        int port = 8000;
-
+        
+        String host = "";
+        
+        while (host.equals("")) {
+            host = JOptionPane.showInputDialog("Please enter the host");
+           
+            if (host == null) {
+                System.exit(0);
+            }
+        }
+        
         try {
-            client = new Socket(host, port);
+            client = new Socket(host, 8000);
             serverMessage = new DataInputStream(client.getInputStream());
             clientMessage = new DataInputStream(new BufferedInputStream(System.in));
             output = new PrintStream(client.getOutputStream());
@@ -46,11 +54,14 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         if (client != null && serverMessage != null && output != null) {
             try {
                 new Thread(new ClientPane()).start();
-                                
+
                 while (status) {
                     String message = clientMessage.readLine().trim();
+
                     if (message.startsWith("EXIT")) {
                         break;
+                    } else {
+                        output.println(message);
                     }
                     output.println(message);
                 }

@@ -28,9 +28,9 @@ class clientInstance extends Thread {
         clientInstance[] clientThreads = this.clientThreads;
         int clientLimit = this.clientLimit;
 
-        Login lg = new Login();
-
-        lg.setVisible(true);
+//        Login lg = new Login();
+//
+//        lg.setVisible(true);
 
         try {
             /*
@@ -40,15 +40,25 @@ class clientInstance extends Thread {
             output = new PrintStream(client.getOutputStream());
             //output.println("Enter your name.");
             //String name = "";
-            String user = "";
+            //String user = "";
 
-            while (user.equals("")) {
-                user = lg.toString();//chose which one of these to use
-                //ClientPane.user = name;
-                //System.out.println("lg.toString = " + user);
-                System.out.print("");
-                //System.out.println("user = " + ClientPane.user);
+//            while (user.equals("")) {
+//                user = lg.toString();//chose which one of these to use
+//                //ClientPane.user = name;
+//                //System.out.println("lg.toString = " + user);
+//                System.out.print("");
+//                //System.out.println("user = " + ClientPane.user);
+//            }
+
+        String user = "";
+        
+        while (user.equals("")) {
+            user = JOptionPane.showInputDialog("Please enter your nickname");
+            
+            if (user == null) {
+                System.exit(0);
             }
+        }
 
             //String user = clientMessage.readLine().trim();
             //System.out.println("username = " + user);
@@ -66,13 +76,13 @@ class clientInstance extends Thread {
                 userNames.add(user);
             }
 
-            //output.println("Welcome to Chit Chat, it's where its at!\n To leave the chatroom send \'EXIT\'");            
-            JOptionPane.showMessageDialog(null, "Welcome to Chit Chat, it's where its at!\n To leave the chatroom send \'EXIT\'");
-
+            output.println("Welcome to Chit Chat, it's where its at!\n To leave the chatroom send \'EXIT\'");            
+            //JOptionPane.showMessageDialog(null, "Welcome to Chit Chat, it's where its at!\n To leave the chatroom send \'EXIT\'");
+            
             Timestamp stamp = new Timestamp(System.currentTimeMillis());
             System.out.println(user + " Joined: " + stamp);
 
-            lg.dispose();
+            //lg.dispose();
 
             for (int i = 0; i < clientLimit; i++) {
                 String message = "*userNames*##";
@@ -128,6 +138,7 @@ class clientInstance extends Thread {
             client.close();
         } catch (IOException e) {
         }
+
     }
     
     private String listToString (ArrayList<String> input) {
@@ -135,4 +146,5 @@ class clientInstance extends Thread {
         out = input.stream().map((name) -> "##" + name).reduce(out, String::concat);
         return out;
     }
+
 }
