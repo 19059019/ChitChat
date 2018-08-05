@@ -70,7 +70,6 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
                 clientMessage.close();
                 serverMessage.close();
                 client.close();
-                // Also kill the frame here
                 System.exit(0);
             } catch (IOException e) {
                 System.err.println(e);
@@ -259,8 +258,19 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
         if (!tfMessageInput.getText().equals("") && !tfMessageInput.getText().equals("Type message here...")) {
             String msg = tfMessageInput.getText();
-
-            output.println(msg);
+            output.println(msg);            
+            if (msg.startsWith("EXIT")) {
+                tfMessageInput.setText("Cheerio!");
+                try {
+                    output.close();
+                    clientMessage.close();
+                    serverMessage.close();
+                    client.close();
+                    System.exit(0);
+                } catch (IOException e) {
+                    System.err.println(e);
+                }
+            }
             //message = msg;
             tfMessageInput.setText("Type message here...");
         }
