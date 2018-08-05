@@ -70,7 +70,8 @@ class clientInstance extends Thread {
       System.out.println(user+" Joined: "+stamp);
 
       // Notifies All current connections of new user
-      for (int i = 0; i < clientLimit; i++) {
+
+for (int i = 0; i < clientLimit; i++) {
         if (clientThreads[i] != null && clientThreads[i] != this) {
           clientThreads[i].objectOutput.writeObject(userNames);
           clientThreads[i].output.println(user + " is now where its at!");

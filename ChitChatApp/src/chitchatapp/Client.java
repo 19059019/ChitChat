@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Client implements Runnable{
+public class Client implements Runnable {
 
   private static Socket client =  null;
   private static DataInputStream serverMessage = null;
@@ -36,12 +36,13 @@ public class Client implements Runnable{
     if (client != null && serverMessage != null && output != null) {
       try {
         new Thread(new Client()).start();
-        output.println(user+" Connected");
+
         while (status) {
           output.println(clientMessage.readLine().trim());
         }
         output.close();
         clientMessage.close();
+        serverMessage.close();
         client.close();
       } catch(IOException e) {
         System.err.println(e);
@@ -53,6 +54,7 @@ public class Client implements Runnable{
     messageListener();
   }
 
+  // Listens for messages from the connection
   public void messageListener() {
     String message;
     try {
@@ -66,3 +68,4 @@ public class Client implements Runnable{
   }
 
 }
+
