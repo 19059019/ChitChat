@@ -44,17 +44,20 @@ class clientInstance extends Thread {
             clientMessage = new DataInputStream(client.getInputStream());
             output = new PrintStream(client.getOutputStream());
             //output.println("Enter your name.");
-            String name = "";
+            //String name = "";
+            String user = "";
 
-            while (name.equals("")) {
-                name = lg.toString();//chose which one of these to use
+            while (user.equals("")) {
+                user = lg.toString();//chose which one of these to use
                 //ClientPane.user = name;
-                //System.out.println("lg.toString = " + name);
+                //System.out.println("lg.toString = " + user);
+                System.out.print("");
                 //System.out.println("user = " + ClientPane.user);
             }
 
             //String user = clientMessage.readLine().trim();
-            String user = name;
+            
+            //System.out.println("username = " + user);
             
             //TODO: deal with duplicate usernames
             if (!userNames.isEmpty()) {
@@ -62,6 +65,8 @@ class clientInstance extends Thread {
                 while (userNames.contains(user)) {
                     output.println(user + " is already taken, please select a new Username");
                     user = clientMessage.readLine().trim();
+                    
+                    //add login thing again
                 }
             }
 
@@ -79,7 +84,7 @@ class clientInstance extends Thread {
 
             for (int i = 0; i < clientLimit; i++) {
                 if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
-                    clientThreads[i].output.println(user + " is now where its at!\n");
+                    clientThreads[i].output.println(user + " is now where its at!");
                 }
             }
 
@@ -91,18 +96,18 @@ class clientInstance extends Thread {
 
                 for (int i = 0; i < clientLimit; i++) {
                     if (clientThreads[i] != null) {
-                        clientThreads[i].output.println(user + ": " + line + "\n");
+                        clientThreads[i].output.println(user + ": " + line);
                     }
                 }
             }
             
             for (int i = 0; i < clientLimit; i++) {
                 if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
-                    clientThreads[i].output.println(user + " Is no longer where it's at!\n");
+                    clientThreads[i].output.println(user + " Is no longer where it's at!");
                 }
             }
             
-            output.println("You are leaving ChitChat!\nDisconnecting...\n");
+            output.println("You are leaving ChitChat!\nDisconnecting...");
 
             // remove user from list of usernames
             synchronized (this) {

@@ -48,7 +48,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
             try {
                 new Thread(new ClientPane()).start();
                 
-                //output.println(user + " Connected\n");
+                output.println(user + " Connected\n");
                 //message = user + " Connected";
                 
                 while (status) {
@@ -69,7 +69,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     public void run() {
         ClientPaneInit();
         messageListener();
-        taUpdate();
+        //taUpdate();
     }
 
     public void messageListener() {
@@ -79,7 +79,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
             while ((msg = serverMessage.readLine()) != null) {
                 System.out.println(msg);
                 taChatArea.append("\n" + msg);
-                message = msg;
+                //message = msg;
             }
             
             status = false;
@@ -88,15 +88,15 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         }
     }
     
-    public void taUpdate() {
-        while (status) { 
-            System.out.println("taUpdate");
-            if (!message.equals("")) {
-                taChatArea.append(message);
-                message = "";
-            }
-        }
-    }
+//    public void taUpdate() {
+//        while (status) { 
+//            System.out.println("taUpdate");
+//            if (!message.equals("")) {
+//                taChatArea.append(message);
+//                message = "";
+//            }
+//        }
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -252,7 +252,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
             String msg = tfMessageInput.getText();
             
             output.println(msg);
-            message = msg;
+            //message = msg;
             tfMessageInput.setText("Type message here...");
         }
     }//GEN-LAST:event_btnSendActionPerformed
