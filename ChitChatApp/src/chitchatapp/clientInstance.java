@@ -58,19 +58,22 @@ class clientInstance extends Thread {
             if (user == null) {
                 System.exit(0);
             }
-        }
-
-            //String user = clientMessage.readLine().trim();
-            //System.out.println("username = " + user);
-            //TODO: deal with duplicate usernames
+            
+            //Check for duplicate usernames
             if (!userNames.isEmpty()) {
-                while (userNames.contains(user)) {
-                    output.println(user + " is already taken, please select a new Username");
-                    user = clientMessage.readLine().trim();
-
-                    //add login thing again
+                if (userNames.contains(user)) {
+                    user = "";
                 }
             }
+        }
+
+            //Deal with duplicate usernames
+//            if (!userNames.isEmpty()) {
+//                while (userNames.contains(user)) {
+//                    output.println(user + " is already taken, please select a new Username");
+//                    user = clientMessage.readLine().trim();
+//                }
+//            }
 
             synchronized (this) {
                 userNames.add(user);

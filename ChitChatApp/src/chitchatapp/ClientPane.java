@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 
 class ClientPane extends javax.swing.JFrame implements Runnable {
 
@@ -19,7 +20,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     private static PrintStream output = null;
     private static boolean status = true;
     public static String user = "Default";
-    public static ArrayList<String> userNames;
+    public static Vector<String> userNames;
 
     public void ClientPaneInit() {
         initComponents();
@@ -89,16 +90,19 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         try {
             while ((message = serverMessage.readLine()) != null) {
                 if (message.startsWith("*userNames*")) {
-                    userNames = new ArrayList<>(Arrays.asList(message.split("##")));
+                    userNames = new Vector<>(Arrays.asList(message.split("##")));
                     message = userNames.get(1);
                     userNames.remove(1);
                     userNames.remove(0);
+                    
                     if (user.equals("Default")) {
                         user = userNames.get(userNames.size() - 1);
                     }
                 }
+                
                 System.out.println(message);
                 taChatArea.append("\n" + message);
+                lstOnlineUsers.setListData(userNames);
             }
 
             status = false;
@@ -261,7 +265,6 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
             String msg = tfMessageInput.getText();
 
             output.println(msg);
-            //message = msg;
             tfMessageInput.setText("Type message here...");
         }
     }//GEN-LAST:event_btnSendActionPerformed
