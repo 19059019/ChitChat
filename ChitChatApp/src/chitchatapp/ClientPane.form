@@ -143,7 +143,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="ImageIcon logo = new ImageIcon(&quot;/home/martin/Varsity/RW354/ChitChat/ChitChatApp/chitchat.png&quot;);&#xa;&#xa;        lblTitle.setIcon(logo);"/>
+            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="ImageIcon logo = new ImageIcon(&quot;/home/20058837/RW354/ChitChat/ChitChatApp/chitchat.png&quot;);&#xa;&#xa;        lblTitle.setIcon(logo);"/>
           </AuxValues>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel1">

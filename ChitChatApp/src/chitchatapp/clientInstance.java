@@ -52,11 +52,13 @@ class clientInstance extends Thread {
                 //System.out.println("user = " + ClientPane.user);
             }
 
-            String user = clientMessage.readLine().trim();
+            //String user = clientMessage.readLine().trim();
+            String user = name;
+            
             //TODO: deal with duplicate usernames
             if (!userNames.isEmpty()) {
                 System.out.println("Checking For Duplicate Names");
-                while (!userNames.contains(user)) {
+                while (userNames.contains(user)) {
                     output.println(user + " is already taken, please select a new Username");
                     user = clientMessage.readLine().trim();
                 }
@@ -75,8 +77,8 @@ class clientInstance extends Thread {
             lg.dispose();
 
             for (int i = 0; i < clientLimit; i++) {
-                if (clientThreads[i] != null && clientThreads[i] != this) {
-                    clientThreads[i].output.println(user + " is now where its at!");
+                if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
+                    clientThreads[i].output.println(user + " is now where its at!\n");
                 }
             }
 
@@ -88,18 +90,18 @@ class clientInstance extends Thread {
 
                 for (int i = 0; i < clientLimit; i++) {
                     if (clientThreads[i] != null) {
-                        clientThreads[i].output.println("-" + user + "> " + line);
+                        clientThreads[i].output.println(user + ": " + line + "\n");
                     }
                 }
             }
             
             for (int i = 0; i < clientLimit; i++) {
-                if (clientThreads[i] != null && clientThreads[i] != this) {
-                    clientThreads[i].output.println(user + " Is no longer where it's at!");
+                if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
+                    clientThreads[i].output.println(user + " Is no longer where it's at!\n");
                 }
             }
             
-            output.println("You are leaving ChitChat!\nDisconnecting...");
+            output.println("You are leaving ChitChat!\nDisconnecting...\n");
 
             // remove user from list of usernames
             synchronized (this) {

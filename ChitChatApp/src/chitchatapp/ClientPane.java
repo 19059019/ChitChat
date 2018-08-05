@@ -1,14 +1,17 @@
 package chitchatapp;
 
+import java.awt.Image;
 import java.io.BufferedInputStream;
 import javax.swing.*;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.PrintStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 class ClientPane extends javax.swing.JFrame implements Runnable {
 
@@ -45,12 +48,12 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
             try {
                 new Thread(new ClientPane()).start();
                 
-                output.println(user + " Connected");
-                message = user + " Connected";
+                //output.println(user + " Connected\n");
+                //message = user + " Connected";
                 
                 while (status) {
                     output.println(clientMessage.readLine().trim());
-                    message = clientMessage.readLine().trim();
+                    //message = clientMessage.readLine().trim();
                 }
                 
                 output.close();
@@ -75,6 +78,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         try {
             while ((msg = serverMessage.readLine()) != null) {
                 System.out.println(msg);
+                taChatArea.append("\n" + msg);
                 message = msg;
             }
             
@@ -220,7 +224,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         );
 
         jScrollPane1.getAccessibleContext().setAccessibleName("");
-        ImageIcon logo = new ImageIcon("/home/martin/Varsity/RW354/ChitChat/ChitChatApp/chitchat.png");
+        ImageIcon logo = new ImageIcon("/home/20058837/RW354/ChitChat/ChitChatApp/chitchat.png");
 
         lblTitle.setIcon(logo);
 
