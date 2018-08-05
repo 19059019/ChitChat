@@ -56,7 +56,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
 
                 while (status) {
                     String message = clientMessage.readLine().trim();
-
+                    
                     if (message.startsWith("EXIT")) {
                         break;
                     } else {
