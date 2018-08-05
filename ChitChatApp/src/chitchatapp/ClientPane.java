@@ -1,17 +1,14 @@
 package chitchatapp;
 
-import java.awt.Image;
 import java.io.BufferedInputStream;
 import javax.swing.*;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.PrintStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 
 class ClientPane extends javax.swing.JFrame implements Runnable {
 
@@ -19,7 +16,6 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     private static DataInputStream serverMessage = null;
     private static DataInputStream clientMessage = null;
     private static PrintStream output = null;
-    public static String message = "";
     private static boolean status = true;
     public static String user = "Default";
 
@@ -31,8 +27,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
 
     public static void main(String[] args) {
         // connect to server socket and open input stream
-        
-        
+
         try {
             client = new Socket("localhost", 8000);
             serverMessage = new DataInputStream(client.getInputStream());
@@ -47,19 +42,24 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         if (client != null && serverMessage != null && output != null) {
             try {
                 new Thread(new ClientPane()).start();
-                
+
                 output.println(user + " Connected\n");
-                //message = user + " Connected";
-                
+
                 while (status) {
-                    output.println(clientMessage.readLine().trim());
-                    //message = clientMessage.readLine().trim();
+                    String message = clientMessage.readLine().trim();
+                    output.println(message);
+
+                    if (message.startsWith("EXIT")) {
+                        System.out.println("Cheerio!");
+                        break;
+                    }
                 }
-                
+
                 output.close();
                 clientMessage.close();
                 serverMessage.close();
                 client.close();
+                System.exit(0);
             } catch (IOException e) {
                 System.err.println(e);
             }
@@ -69,34 +69,23 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     public void run() {
         ClientPaneInit();
         messageListener();
-        //taUpdate();
     }
 
     public void messageListener() {
-        String msg;
-        
+        String message;
+
         try {
-            while ((msg = serverMessage.readLine()) != null) {
-                System.out.println(msg);
-                taChatArea.append("\n" + msg);
-                //message = msg;
+            while ((message = serverMessage.readLine()) != null) {
+                System.out.println(message);
+                taChatArea.append("\n" + message);
             }
-            
+
             status = false;
         } catch (IOException e) {
             System.err.println(e);
+            System.out.println("Disconnected!");
         }
     }
-    
-//    public void taUpdate() {
-//        while (status) { 
-//            System.out.println("taUpdate");
-//            if (!message.equals("")) {
-//                taChatArea.append(message);
-//                message = "";
-//            }
-//        }
-//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -250,7 +239,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
         if (!tfMessageInput.getText().equals("") && !tfMessageInput.getText().equals("Type message here...")) {
             String msg = tfMessageInput.getText();
-            
+
             output.println(msg);
             //message = msg;
             tfMessageInput.setText("Type message here...");
@@ -289,5 +278,4 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     private javax.swing.JTextField tfMessageInput;
     // End of variables declaration//GEN-END:variables
 
-    
 }

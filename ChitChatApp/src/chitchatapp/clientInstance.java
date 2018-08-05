@@ -1,7 +1,6 @@
 package chitchatapp;
 
 import javax.swing.*;
-
 import java.io.DataInputStream;
 import java.io.PrintStream;
 import java.io.BufferedInputStream;
@@ -34,7 +33,7 @@ class clientInstance extends Thread {
         int clientLimit = this.clientLimit;
 
         Login lg = new Login();
-        
+
         lg.setVisible(true);
 
         try {
@@ -56,16 +55,13 @@ class clientInstance extends Thread {
             }
 
             //String user = clientMessage.readLine().trim();
-            
             //System.out.println("username = " + user);
-            
             //TODO: deal with duplicate usernames
             if (!userNames.isEmpty()) {
-                System.out.println("Checking For Duplicate Names");
                 while (userNames.contains(user)) {
                     output.println(user + " is already taken, please select a new Username");
                     user = clientMessage.readLine().trim();
-                    
+
                     //add login thing again
                 }
             }
@@ -100,24 +96,23 @@ class clientInstance extends Thread {
                     }
                 }
             }
-            
-            for (int i = 0; i < clientLimit; i++) {
-                if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
-                    clientThreads[i].output.println(user + " Is no longer where it's at!");
-                }
-            }
-            
-            output.println("You are leaving ChitChat!\nDisconnecting...");
 
             // remove user from list of usernames
+            stamp = new Timestamp(System.currentTimeMillis());
+            System.out.println(user + " Disconnected: " + stamp);
+
             synchronized (this) {
                 userNames.remove(user);
                 System.out.println(userNames.indexOf(user));
             }
 
-            clientMessage.close();
-            output.close();
-            client.close();
+            for (int i = 0; i < clientLimit; i++) {
+                if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
+                    clientThreads[i].output.println(user + " Is no longer where it's at!");
+                }
+            }
+
+            output.println("You are leaving ChitChat!\nDisconnecting...");
 
             /*
        * Clean up. Set the current thread variable to null so that a new client
@@ -129,8 +124,10 @@ class clientInstance extends Thread {
                 }
             }
 
+            clientMessage.close();
+            output.close();
+            client.close();
         } catch (IOException e) {
         }
     }
 }
-
