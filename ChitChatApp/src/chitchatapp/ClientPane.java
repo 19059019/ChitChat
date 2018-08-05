@@ -26,21 +26,26 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         setTitle("ChitChat");
     }
 
-    public static void main(String[] args) {
-        // connect to server socket and open input stream
+    public static void main(String[] args) {        
         
-        String host = "";
-        
-        while (host.equals("")) {
-            host = JOptionPane.showInputDialog("Please enter the host");
-           
-            if (host == null) {
-                System.exit(0);
-            }
+        String host = JOptionPane.showInputDialog("Please enter the host");
+        if (host == null) {
+            System.exit(0);
         }
         
         try {
-            client = new Socket(host, 8000);
+             client = new Socket(host, 8000);
+        } catch (UnknownHostException e) {
+            JOptionPane.showMessageDialog(null, "Unknown host. Come back when"
+                    + " you're sure of where you're going!");
+            System.exit(0);
+        } catch (IOException e) {
+            System.out.println(e);
+            System.exit(0);
+        }
+
+        
+        try {
             serverMessage = new DataInputStream(client.getInputStream());
             clientMessage = new DataInputStream(new BufferedInputStream(System.in));
             output = new PrintStream(client.getOutputStream());
