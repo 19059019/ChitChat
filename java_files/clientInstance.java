@@ -1,5 +1,6 @@
 import java.io.DataInputStream;
 import java.io.PrintStream;
+import java.io.ObjectOutputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -19,6 +20,7 @@ import java.sql.Timestamp;
 class clientInstance extends Thread {
 
   private DataInputStream clientMessage = null;
+  private ObjectOutputStream objectOutput = null;
   private PrintStream output = null;
   private Socket client = null;
   private final clientInstance[] clientThreads;
@@ -41,6 +43,7 @@ class clientInstance extends Thread {
        * Create input and output streams for this client.
        */
       clientMessage = new DataInputStream(client.getInputStream());
+      objectOutput = new ObjectOutputStream(client.getOutputStream());
       output = new PrintStream(client.getOutputStream());
       output.println("Please Enter a Username");
 
@@ -69,6 +72,7 @@ class clientInstance extends Thread {
       // Notifies All current connections of new user
       for (int i = 0; i < clientLimit; i++) {
         if (clientThreads[i] != null && clientThreads[i] != this) {
+          clientThreads[i].objectOutput.writeObject(userNames);
           clientThreads[i].output.println(user + " is now where its at!");
         }
       }
@@ -84,18 +88,21 @@ class clientInstance extends Thread {
           }
         }
       }
-      for (int i = 0; i < clientLimit; i++) {
-        if (clientThreads[i] != null && clientThreads[i] != this) {
-          clientThreads[i].output.println(user + " Is no longer Where its at!");
-        }
-      }
-      output.println("You are leaving ChitChat!\nDisconnecting...");
 
       // remove user from list of usernames
       synchronized (this) {
         userNames.remove(user);
         System.out.println(userNames.indexOf(user));
       }
+      for (int i = 0; i < clientLimit; i++) {
+        if (clientThreads[i] != null && clientThreads[i] != this) {
+          clientThreads[i].objectOutput.writeObject(userNames);
+          clientThreads[i].output.println(user + " Is no longer Where its at!");
+        }
+      }
+      output.println("You are leaving ChitChat!\nDisconnecting...");
+
+
 
       clientMessage.close();
       output.close();
