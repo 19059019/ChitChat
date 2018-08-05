@@ -58,23 +58,14 @@ class clientInstance extends Thread {
             if (user == null) {
                 System.exit(0);
             }
-            
-            //Check for duplicate usernames
+        }
+         //Check for duplicate usernames
             if (!userNames.isEmpty()) {
-                if (userNames.contains(user)) {
-                    user = "";
-                    JOptionPane.showMessageDialog(null, "Nickname already in use! Please enter a unique nickname.");
+                while (userNames.contains(user)) {
+                    user = JOptionPane.showInputDialog("Nickname already in "
+                            + "use!\n Please enter a unique nickname.");
                 }
             }
-        }
-
-            //Deal with duplicate usernames
-//            if (!userNames.isEmpty()) {
-//                while (userNames.contains(user)) {
-//                    output.println(user + " is already taken, please select a new Username");
-//                    user = clientMessage.readLine().trim();
-//                }
-//            }
 
             synchronized (this) {
                 userNames.add(user);
@@ -126,7 +117,7 @@ class clientInstance extends Thread {
                 if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
                     message += user + " Is no longer where it's at!" + users;
                     System.out.println(message);
-                    clientThreads[i].output.println(user + " Is no longer where it's at!");
+                    clientThreads[i].output.println(message);
                 }
             }
             /*

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class ClientPane extends javax.swing.JFrame implements Runnable {
 
@@ -20,7 +22,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     private static PrintStream output = null;
     private static boolean status = true;
     public static String user = "Default";
-    public static Vector<String> userNames;
+    public static Vector<String> userNames = new Vector<String>();
 
     public void ClientPaneInit() {
         initComponents();
@@ -93,6 +95,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
                     message = userNames.get(1);
                     userNames.remove(1);
                     userNames.remove(0);
+                    lstOnlineUsers.setListData(userNames);
                     
                     if (user.equals("Default")) {
                         user = userNames.get(userNames.size() - 1);
@@ -102,7 +105,6 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
                 
                 System.out.println(message);
                 taChatArea.append("\n" + message);
-                lstOnlineUsers.setListData(userNames);
             }
 
             status = false;
@@ -264,7 +266,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         if (!tfMessageInput.getText().equals("") && !tfMessageInput.getText().equals("Type message here...")) {
             String msg = tfMessageInput.getText();
 
-            output.println(msg);     
+            output.println(msg);
             
             if (msg.startsWith("EXIT")) {
                 tfMessageInput.setText("Cheerio!");
