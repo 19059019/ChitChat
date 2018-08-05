@@ -52,7 +52,6 @@ class clientInstance extends Thread {
 
       //TODO: deal with duplicate usernames
       if (!userNames.isEmpty()) {
-        System.out.println("Checking For Duplicate Names");
         while (userNames.contains(user)) {
           output.println(user + " is already taken, please select a new Username");
           user = clientMessage.readLine().trim();
@@ -73,7 +72,6 @@ class clientInstance extends Thread {
 
 for (int i = 0; i < clientLimit; i++) {
         if (clientThreads[i] != null && clientThreads[i] != this) {
-          clientThreads[i].objectOutput.writeObject(userNames);
           clientThreads[i].output.println(user + " is now where its at!");
         }
       }
@@ -91,24 +89,18 @@ for (int i = 0; i < clientLimit; i++) {
       }
 
       // remove user from list of usernames
+      stamp = new Timestamp(System.currentTimeMillis());
+      System.out.println(user + " Disconnected: " + stamp);
       synchronized (this) {
         userNames.remove(user);
         System.out.println(userNames.indexOf(user));
       }
+
       for (int i = 0; i < clientLimit; i++) {
         if (clientThreads[i] != null && clientThreads[i] != this) {
-          clientThreads[i].objectOutput.writeObject(userNames);
           clientThreads[i].output.println(user + " Is no longer Where its at!");
         }
       }
-      output.println("You are leaving ChitChat!\nDisconnecting...");
-
-
-
-      clientMessage.close();
-      output.close();
-      client.close();
-
       /*
        * Clean up. Set the current thread variable to null so that a new client
        * could be accepted by the server.
@@ -118,7 +110,9 @@ for (int i = 0; i < clientLimit; i++) {
           clientThreads[i] = null;
         }
       }
-
+      clientMessage.close();
+      output.close();
+      client.close();
     } catch (IOException e) {
     }
   }

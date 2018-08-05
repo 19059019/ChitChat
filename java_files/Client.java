@@ -41,18 +41,24 @@ public class Client implements Runnable {
         new Thread(new Client()).start();
 
         while (status) {
-          output.println(clientMessage.readLine().trim());
+          String message =  clientMessage.readLine().trim();
+          output.println(message);
+          if (message.startsWith("EXIT")) {
+            System.out.println("Cheerio!");
+            break;
+          }
         }
         output.close();
         clientMessage.close();
         serverMessage.close();
         client.close();
+        System.exit(0);
       } catch(IOException e) {
         System.err.println(e);
       }
     }
   }
-
+  
   public void run() {
     messageListener();
   }
@@ -62,21 +68,11 @@ public class Client implements Runnable {
     String message;
     try {
       while ((message = serverMessage.readLine()) != null) {
-        try {
-          Object object = objectInput.readObject();
-          if (object != null) {
-              userNames = (ArrayList<String>) object;
-              System.out.println(userNames);
-          }
-        } catch (ClassNotFoundException e) {
-          System.err.println(e);
-        }
-
         System.out.println(message);
       }
         status = false;
     } catch (IOException e) {
-      System.err.println(e);
+        System.out.println("Disconnected!");
     }
   }
 
