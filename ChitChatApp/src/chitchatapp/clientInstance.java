@@ -16,6 +16,7 @@ class clientInstance extends Thread {
     private clientInstance[] clientThreads;
     private int clientLimit;
     private ArrayList<String> userNames;
+    private String user;
 
     public clientInstance(Socket client, clientInstance[] clientThreads, ArrayList<String> userNames) {
         this.client = client;
@@ -39,28 +40,10 @@ class clientInstance extends Thread {
              */
             clientMessage = new DataInputStream(client.getInputStream());
             output = new PrintStream(client.getOutputStream());
-            //output.println("Enter your name.");
-            //String name = "";
-            //String user = "";
 
-//            while (user.equals("")) {
-//                user = lg.toString();//chose which one of these to use
-//                //ClientPane.user = name;
-//                //System.out.println("lg.toString = " + user);
-//                System.out.print("");
-//                //System.out.println("user = " + ClientPane.user);
-//            }
-
-        String user = "";
-        
-        while (user.equals("")) {
             user = JOptionPane.showInputDialog("Please enter your nickname");
-            
-            if (user == null) {
-                System.exit(0);
-            }
-        }
-         //Check for duplicate usernames
+        
+            //Check for duplicate usernames
             if (!userNames.isEmpty()) {
                 while (userNames.contains(user)) {
                     user = JOptionPane.showInputDialog("Nickname already in "
@@ -90,17 +73,44 @@ class clientInstance extends Thread {
                     clientThreads[i].output.println(message);
                 }
             }
-
+            // Listen for messages
             while (true) {
                 String line = clientMessage.readLine();
+                String whisper = "";
+                Boolean validUser = false;
                 if (line.startsWith("EXIT")) {
                     break;
                 }
-
-                for (int i = 0; i < clientLimit; i++) {
-                    if (clientThreads[i] != null) {
-                        clientThreads[i].output.println(user + ": " + line);
+                
+                if (line.startsWith("@")) {
+                    for (int i = 1; i < line.length(); i++) {
+                        if (Character.isWhitespace(line.charAt(i))) {
+                            break;
+                        } else {
+                            whisper += line.charAt(i);
+                        }
                     }
+                }
+                
+               System.out.println(whisper);
+               
+                for (int i = 0; i < clientLimit; i++) {
+                    if (whisper.equals("") && clientThreads[i] != null) {
+                        clientThreads[i].output.println(user + ": " + line);
+                        validUser = true;
+                    } else if ((clientThreads[i] != null && 
+                            clientThreads[i].user.equals(whisper))||
+                            clientThreads[i] == this) {
+                        clientThreads[i].output.println("[WHISPERED]" + user 
+                                + ": " + line);
+                        if (clientThreads[i] != this) {
+                            validUser = true;
+                        }
+                    }
+                }
+                
+                if (!validUser) {
+                    this.output.println("You tried to whisper at an invalid user");
                 }
             }
 
@@ -121,10 +131,7 @@ class clientInstance extends Thread {
                     clientThreads[i].output.println(message);
                 }
             }
-            /*
-       * Clean up. Set the current thread variable to null so that a new client
-       * could be accepted by the server.
-             */
+            
             for (int i = 0; i < clientLimit; i++) {
                 if (clientThreads[i] == this) {
                     clientThreads[i] = null;
