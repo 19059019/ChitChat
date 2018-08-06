@@ -26,20 +26,20 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         setTitle("ChitChat - " + user);
     }
 
-    public static void main(String[] args) {        
+    public static void main(String[] args) {
         String host = "";
         int port = 8000;
-        
+
         while (host.equals("")) {
             host = JOptionPane.showInputDialog("Please enter the host");
+
             if (host == null) {
                 System.exit(0);
             }
         }
-        
-        
+
         try {
-             client = new Socket(host, port);
+            client = new Socket(host, port);
         } catch (UnknownHostException e) {
             JOptionPane.showMessageDialog(null, "Unknown host. Come back when"
                     + " you're sure of where you're going!");
@@ -48,44 +48,45 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
             System.out.println(e);
             System.exit(0);
         }
-        
-        
+
         try {
             serverMessage = new DataInputStream(client.getInputStream());
             clientMessage = new DataInputStream(new BufferedInputStream(System.in));
             output = new PrintStream(client.getOutputStream());
-            
+
         } catch (UnknownHostException e) {
             System.err.println(e);
         } catch (IOException e) {
             System.err.println(e);
         }
-        
-        
 
         if (client != null && serverMessage != null && output != null) {
             try {
-                
+
                 user = "";
                 String users = serverMessage.readLine();
                 userNames = new Vector<>(Arrays.asList(users.split("##")));
-                
+
                 while (user.equals("")) {
                     user = JOptionPane.showInputDialog("Please enter your nickname");
-                
+
+                    if (user == null) {
+                        System.exit(0);
+                    }
+
                     //Check for duplicate usernames
                     if (!userNames.isEmpty()) {
                         if (userNames.contains(user)) {
-                            user = JOptionPane.showInputDialog("Nickname already in "
-                                 + "use!\n Please enter a unique nickname.");
+                            JOptionPane.showMessageDialog(null,
+                                    "Nickname already in "
+                                    + "use!\n Please enter a unique nickname.");
+                            user = "";
                         }
                     }
                 }
-                
-                
-                
+
                 new Thread(new ClientPane()).start();
-                
+
                 output.println(user);
 
                 while (status) {
@@ -98,6 +99,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
                     }
                     output.println(message);
                 }
+                
                 System.out.println("Cheerio!");
                 output.close();
                 clientMessage.close();
@@ -127,13 +129,13 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
                     userNames.remove(1);
                     userNames.remove(0);
                     lstOnlineUsers.setListData(userNames);
-                    
+
                     if (user.equals("Default")) {
                         user = userNames.get(userNames.size() - 1);
                         setTitle("ChitChat - " + user);
                     }
                 }
-                
+
                 System.out.println(message);
                 taChatArea.append("\n" + message);
             }
@@ -298,9 +300,10 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
             String msg = tfMessageInput.getText();
 
             output.println(msg);
-            
+
             if (msg.startsWith("EXIT")) {
                 tfMessageInput.setText("Cheerio!");
+                
                 try {
                     output.close();
                     clientMessage.close();
@@ -318,6 +321,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
 
     private void btnWhisperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWhisperActionPerformed
         String target = lstOnlineUsers.getSelectedValue();
+        
         if (!tfMessageInput.getText().equals("") && !tfMessageInput.getText().equals("Type message here...")) {
             String msg = tfMessageInput.getText();
 
@@ -326,7 +330,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
             tfMessageInput.setText("Type message here...");
             btnGroup.setEnabled(true);
         }
-        
+
     }//GEN-LAST:event_btnWhisperActionPerformed
 
     private void lstOnlineUsersValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstOnlineUsersValueChanged

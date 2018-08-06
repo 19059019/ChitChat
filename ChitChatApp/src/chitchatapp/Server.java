@@ -1,10 +1,7 @@
 package chitchatapp;
 
-import java.io.DataInputStream;
 import java.io.PrintStream;
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
 import java.net.Socket;
 import java.net.ServerSocket;
@@ -19,18 +16,21 @@ public class Server {
     private static ArrayList<String> userNames = new ArrayList<String>();
 
     public static void main(String[] args) {
+        int i;
+        int  port = 8000;
+
         // open ServerSocket
         try {
-            server = new ServerSocket(8000);
+            server = new ServerSocket(port);
         } catch (IOException e) {
             System.err.println(e);
         }
 
         // create new socket for each new client that attempts to connect
         while (status) {
-            int i;
             try {
                 client = server.accept();
+                
                 for (i = 0; i < clientLimit; i++) {
                     if (clientThreads[i] == null) {
                         clientThreads[i] = new clientInstance(client, clientThreads, userNames);
@@ -46,7 +46,7 @@ public class Server {
                     output.close();
                     client.close();
                 }
-                
+
             } catch (IOException e) {
                 System.err.println(e);
             }

@@ -1,6 +1,5 @@
 package chitchatapp;
 
-import javax.swing.*;
 import java.io.DataInputStream;
 import java.io.PrintStream;
 import java.io.IOException;
@@ -30,50 +29,47 @@ class clientInstance extends Thread {
         clientInstance[] clientThreads = this.clientThreads;
         int clientLimit = this.clientLimit;
 
-//        Login lg = new Login();
-//
-//        lg.setVisible(true);
-
         try {
-            /*
-       * Create input and output streams for this client.
-             */
             clientMessage = new DataInputStream(client.getInputStream());
             output = new PrintStream(client.getOutputStream());
-            
+
             // Send current usernames to client for nickname picking
             String userList = listToString(userNames);
             output.println(userList);
             user = clientMessage.readLine();
-            
 
             synchronized (this) {
-                userNames.add(user);
+                if (user != null) {
+                    userNames.add(user);
+                }
             }
 
             output.println("Welcome to Chit Chat, it's where its at!"
-                    + "\n To leave the chatroom send \'EXIT\'");            
-            
+                    + "\n To leave the chatroom send \'EXIT\'");
+
             Timestamp stamp = new Timestamp(System.currentTimeMillis());
             System.out.println(user + " Joined: " + stamp);
 
             for (int i = 0; i < clientLimit; i++) {
                 String message = "*userNames*##";
                 String users = listToString(userNames);
-                if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
+
+                if (clientThreads[i] != null) {
                     message += user + " is now where its at!" + users;
                     clientThreads[i].output.println(message);
                 }
             }
+
             // Listen for messages
             while (true) {
                 String line = clientMessage.readLine();
                 String whisper = "";
                 Boolean validUser = false;
+
                 if (line.startsWith("EXIT")) {
                     break;
                 }
-                
+
                 if (line.startsWith("@")) {
                     for (int i = 1; i < line.length(); i++) {
                         if (Character.isWhitespace(line.charAt(i))) {
@@ -83,22 +79,22 @@ class clientInstance extends Thread {
                         }
                     }
                 }
-               
+
                 for (int i = 0; i < clientLimit; i++) {
                     if (whisper.equals("") && clientThreads[i] != null) {
                         clientThreads[i].output.println(user + ": " + line);
                         validUser = true;
-                    } else if ((clientThreads[i] != null && 
-                            clientThreads[i].user.equals(whisper))||
-                            clientThreads[i] == this) {
-                        clientThreads[i].output.println("[WHISPERED]" + user 
+                    } else if ((clientThreads[i] != null
+                            && clientThreads[i].user.equals(whisper))
+                            || clientThreads[i] == this) {
+                        clientThreads[i].output.println("[WHISPERED]" + user
                                 + ": " + line);
                         if (clientThreads[i] != this) {
                             validUser = true;
                         }
                     }
                 }
-                
+
                 if (!validUser) {
                     this.output.println("You tried to whisper at an invalid user");
                 }
@@ -115,12 +111,13 @@ class clientInstance extends Thread {
             for (int i = 0; i < clientLimit; i++) {
                 String message = "*userNames*##";
                 String users = listToString(userNames);
-                if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
+                
+                if (clientThreads[i] != null) {
                     message += user + " Is no longer where it's at!" + users;
                     clientThreads[i].output.println(message);
                 }
             }
-            
+
             for (int i = 0; i < clientLimit; i++) {
                 if (clientThreads[i] == this) {
                     clientThreads[i] = null;
@@ -134,8 +131,8 @@ class clientInstance extends Thread {
         }
 
     }
-    
-    private String listToString (ArrayList<String> input) {
+
+    private String listToString(ArrayList<String> input) {
         String out = "";
         out = input.stream().map((name) -> "##" + name).reduce(out, String::concat);
         return out;
