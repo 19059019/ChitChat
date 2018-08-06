@@ -29,9 +29,11 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     public static void main(String[] args) {
         String host = "";
         int port = 8000;
+        ImageIcon logo = new ImageIcon("/home/martin/Varsity/RW354/ChitChat/ChitChatApp/chitchat.png");
 
         while (host.equals("")) {
-            host = JOptionPane.showInputDialog("Please enter the host");
+            host = (String) JOptionPane.showInputDialog(null, "Please enter the host",
+                    "Host", JOptionPane.QUESTION_MESSAGE, logo, null, "");
 
             if (host == null) {
                 System.exit(0);
@@ -68,7 +70,8 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
                 userNames = new Vector<>(Arrays.asList(users.split("##")));
 
                 while (user.equals("")) {
-                    user = JOptionPane.showInputDialog("Please enter your nickname");
+                    user = (String) JOptionPane.showInputDialog(null, "Please enter your nickname",
+                            "Host", JOptionPane.QUESTION_MESSAGE, logo, null, "");
 
                     if (user == null) {
                         System.exit(0);
@@ -99,7 +102,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
                     }
                     output.println(message);
                 }
-                
+
                 System.out.println("Cheerio!");
                 output.close();
                 clientMessage.close();
@@ -168,7 +171,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         lblNumUsers = new javax.swing.JLabel();
         btnSend = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
         taChatArea.setEditable(false);
         taChatArea.setColumns(20);
@@ -272,7 +275,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         );
 
         jScrollPane1.getAccessibleContext().setAccessibleName("");
-        ImageIcon logo = new ImageIcon("/home/20058837/RW354/ChitChat/ChitChatApp/chitchat.png");
+        ImageIcon logo = new ImageIcon("/home/martin/Varsity/RW354/ChitChat/ChitChatApp/chitchat.png");
 
         lblTitle.setIcon(logo);
 
@@ -282,7 +285,8 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 539, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -303,7 +307,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
 
             if (msg.startsWith("EXIT")) {
                 tfMessageInput.setText("Cheerio!");
-                
+
                 try {
                     output.close();
                     clientMessage.close();
@@ -321,7 +325,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
 
     private void btnWhisperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWhisperActionPerformed
         String target = lstOnlineUsers.getSelectedValue();
-        
+
         if (!tfMessageInput.getText().equals("") && !tfMessageInput.getText().equals("Type message here...")) {
             String msg = tfMessageInput.getText();
 

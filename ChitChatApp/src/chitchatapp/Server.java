@@ -7,9 +7,10 @@ import java.net.Socket;
 import java.net.ServerSocket;
 
 public class Server {
+
     private static ServerSocket server = null;
     private static Socket client = null;
-    private static final int clientLimit = 5;
+    private static final int clientLimit = 10;
     private static final clientInstance[] clientThreads = new clientInstance[clientLimit];
     private static PrintStream output = null;
     private static Boolean status = true;
@@ -17,7 +18,7 @@ public class Server {
 
     public static void main(String[] args) {
         int i;
-        int  port = 8000;
+        int port = 8000;
 
         // open ServerSocket
         try {
@@ -30,7 +31,7 @@ public class Server {
         while (status) {
             try {
                 client = server.accept();
-                
+
                 for (i = 0; i < clientLimit; i++) {
                     if (clientThreads[i] == null) {
                         clientThreads[i] = new clientInstance(client, clientThreads, userNames);

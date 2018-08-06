@@ -111,7 +111,7 @@ class clientInstance extends Thread {
             for (int i = 0; i < clientLimit; i++) {
                 String message = "*userNames*##";
                 String users = listToString(userNames);
-                
+
                 if (clientThreads[i] != null) {
                     message += user + " Is no longer where it's at!" + users;
                     clientThreads[i].output.println(message);
@@ -129,7 +129,6 @@ class clientInstance extends Thread {
             client.close();
         } catch (IOException e) {
         }
-
     }
 
     private String listToString(ArrayList<String> input) {
@@ -137,5 +136,4 @@ class clientInstance extends Thread {
         out = input.stream().map((name) -> "##" + name).reduce(out, String::concat);
         return out;
     }
-
 }
