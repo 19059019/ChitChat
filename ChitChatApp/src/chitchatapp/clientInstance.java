@@ -117,7 +117,6 @@ class clientInstance extends Thread {
                 String users = listToString(userNames);
                 if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
                     message += user + " Is no longer where it's at!" + users;
-                    System.out.println(message);
                     clientThreads[i].output.println(message);
                 }
             }
