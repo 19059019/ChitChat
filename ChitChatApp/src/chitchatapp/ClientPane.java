@@ -58,19 +58,22 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         
 
         if (client != null && serverMessage != null && output != null) {
-            try {
-                new Thread(new ClientPane()).start();
-                
+            try {                
                 user = JOptionPane.showInputDialog("Please enter your nickname");
-        
+                
+                String users = serverMessage.readLine();
+                userNames = new Vector<>(Arrays.asList(users.split("##")));
+                
                 //Check for duplicate usernames
-                System.out.println(userNames);
                 if (!userNames.isEmpty()) {
                     while (userNames.contains(user)) {
                         user = JOptionPane.showInputDialog("Nickname already in "
                              + "use!\n Please enter a unique nickname.");
                     }
                 }
+                
+                
+                new Thread(new ClientPane()).start();
                 
                 output.println(user);
 

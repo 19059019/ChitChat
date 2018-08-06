@@ -40,21 +40,12 @@ class clientInstance extends Thread {
              */
             clientMessage = new DataInputStream(client.getInputStream());
             output = new PrintStream(client.getOutputStream());
-
-//            user = JOptionPane.showInputDialog("Please enter your nickname");
-            String prefix = "*userNames*##";
+            
+            // Send current usernames to client for nickname picking
             String userList = listToString(userNames);
-            output.println(prefix + "I AM HERE" + userList);
+            output.println(userList);
             user = clientMessage.readLine();
             
-//            //Check for duplicate usernames
-//            if (!userNames.isEmpty()) {
-//                while (userNames.contains(user)) {
-//                    user = JOptionPane.showInputDialog("Nickname already in "
-//                            + "use!\n Please enter a unique nickname.");
-//                }
-//            }
-//        
 
             synchronized (this) {
                 userNames.add(user);
@@ -62,12 +53,9 @@ class clientInstance extends Thread {
 
             output.println("Welcome to Chit Chat, it's where its at!"
                     + "\n To leave the chatroom send \'EXIT\'");            
-            //JOptionPane.showMessageDialog(null, "Welcome to Chit Chat, it's where its at!\n To leave the chatroom send \'EXIT\'");
             
             Timestamp stamp = new Timestamp(System.currentTimeMillis());
             System.out.println(user + " Joined: " + stamp);
-
-            //lg.dispose();
 
             for (int i = 0; i < clientLimit; i++) {
                 String message = "*userNames*##";
