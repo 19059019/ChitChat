@@ -62,7 +62,6 @@ class clientInstance extends Thread {
                 String users = listToString(userNames);
                 if (clientThreads[i] != null /*&& clientThreads[i] != this*/) {//uncomment this later
                     message += user + " is now where its at!" + users;
-                    System.out.println(message);
                     clientThreads[i].output.println(message);
                 }
             }
@@ -84,8 +83,6 @@ class clientInstance extends Thread {
                         }
                     }
                 }
-                
-               System.out.println(whisper);
                
                 for (int i = 0; i < clientLimit; i++) {
                     if (whisper.equals("") && clientThreads[i] != null) {

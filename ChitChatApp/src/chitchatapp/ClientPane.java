@@ -23,7 +23,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     public void ClientPaneInit() {
         initComponents();
         setVisible(true);
-        setTitle("ChitChat");
+        setTitle("ChitChat - " + user);
     }
 
     public static void main(String[] args) {        
@@ -307,7 +307,16 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_btnSendActionPerformed
 
     private void btnWhisperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWhisperActionPerformed
-        btnGroup.setEnabled(true);
+        String target = lstOnlineUsers.getSelectedValue();
+        if (!tfMessageInput.getText().equals("") && !tfMessageInput.getText().equals("Type message here...")) {
+            String msg = tfMessageInput.getText();
+
+            output.println("@" + target + " " + msg);
+
+            tfMessageInput.setText("Type message here...");
+            btnGroup.setEnabled(true);
+        }
+        
     }//GEN-LAST:event_btnWhisperActionPerformed
 
     private void lstOnlineUsersValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstOnlineUsersValueChanged
@@ -315,12 +324,15 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_lstOnlineUsersValueChanged
 
     private void btnGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGroupActionPerformed
-        //code, then...
         btnGroup.setEnabled(false);
+        btnWhisper.setEnabled(false);
+        lstOnlineUsers.clearSelection();
     }//GEN-LAST:event_btnGroupActionPerformed
 
     private void tfMessageInputFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfMessageInputFocusGained
-        tfMessageInput.setText("");
+        if (tfMessageInput.getText().equals("Type message here...")) {
+            tfMessageInput.setText("");
+        }
     }//GEN-LAST:event_tfMessageInputFocusGained
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
