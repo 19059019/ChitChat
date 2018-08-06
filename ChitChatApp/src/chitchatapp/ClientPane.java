@@ -58,7 +58,8 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         
 
         if (client != null && serverMessage != null && output != null) {
-            try {                
+            try {
+                
                 user = JOptionPane.showInputDialog("Please enter your nickname");
                 
                 String users = serverMessage.readLine();
