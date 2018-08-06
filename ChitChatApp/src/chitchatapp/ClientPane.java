@@ -27,14 +27,19 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
     }
 
     public static void main(String[] args) {        
+        String host = "";
+        int port = 8000;
         
-        String host = JOptionPane.showInputDialog("Please enter the host");
-        if (host == null) {
-            System.exit(0);
+        while (host.equals("")) {
+            host = JOptionPane.showInputDialog("Please enter the host");
+            if (host == null) {
+                System.exit(0);
+            }
         }
         
+        
         try {
-             client = new Socket(host, 8000);
+             client = new Socket(host, port);
         } catch (UnknownHostException e) {
             JOptionPane.showMessageDialog(null, "Unknown host. Come back when"
                     + " you're sure of where you're going!");
@@ -49,6 +54,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
             serverMessage = new DataInputStream(client.getInputStream());
             clientMessage = new DataInputStream(new BufferedInputStream(System.in));
             output = new PrintStream(client.getOutputStream());
+            
         } catch (UnknownHostException e) {
             System.err.println(e);
         } catch (IOException e) {
@@ -60,18 +66,22 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         if (client != null && serverMessage != null && output != null) {
             try {
                 
-                user = JOptionPane.showInputDialog("Please enter your nickname");
-                
+                user = "";
                 String users = serverMessage.readLine();
                 userNames = new Vector<>(Arrays.asList(users.split("##")));
                 
-                //Check for duplicate usernames
-                if (!userNames.isEmpty()) {
-                    while (userNames.contains(user)) {
-                        user = JOptionPane.showInputDialog("Nickname already in "
-                             + "use!\n Please enter a unique nickname.");
+                while (user.equals("")) {
+                    user = JOptionPane.showInputDialog("Please enter your nickname");
+                
+                    //Check for duplicate usernames
+                    if (!userNames.isEmpty()) {
+                        if (userNames.contains(user)) {
+                            user = JOptionPane.showInputDialog("Nickname already in "
+                                 + "use!\n Please enter a unique nickname.");
+                        }
                     }
                 }
+                
                 
                 
                 new Thread(new ClientPane()).start();
