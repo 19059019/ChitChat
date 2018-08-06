@@ -43,7 +43,7 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
             System.out.println(e);
             System.exit(0);
         }
-
+        
         
         try {
             serverMessage = new DataInputStream(client.getInputStream());
@@ -54,10 +54,25 @@ class ClientPane extends javax.swing.JFrame implements Runnable {
         } catch (IOException e) {
             System.err.println(e);
         }
+        
+        
 
         if (client != null && serverMessage != null && output != null) {
             try {
                 new Thread(new ClientPane()).start();
+                
+                user = JOptionPane.showInputDialog("Please enter your nickname");
+        
+                //Check for duplicate usernames
+                System.out.println(userNames);
+                if (!userNames.isEmpty()) {
+                    while (userNames.contains(user)) {
+                        user = JOptionPane.showInputDialog("Nickname already in "
+                             + "use!\n Please enter a unique nickname.");
+                    }
+                }
+                
+                output.println(user);
 
                 while (status) {
                     String message = clientMessage.readLine().trim();

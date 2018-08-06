@@ -41,15 +41,20 @@ class clientInstance extends Thread {
             clientMessage = new DataInputStream(client.getInputStream());
             output = new PrintStream(client.getOutputStream());
 
-            user = JOptionPane.showInputDialog("Please enter your nickname");
-        
-            //Check for duplicate usernames
-            if (!userNames.isEmpty()) {
-                while (userNames.contains(user)) {
-                    user = JOptionPane.showInputDialog("Nickname already in "
-                            + "use!\n Please enter a unique nickname.");
-                }
-            }
+//            user = JOptionPane.showInputDialog("Please enter your nickname");
+            String prefix = "*userNames*##";
+            String userList = listToString(userNames);
+            output.println(prefix + "I AM HERE" + userList);
+            user = clientMessage.readLine();
+            
+//            //Check for duplicate usernames
+//            if (!userNames.isEmpty()) {
+//                while (userNames.contains(user)) {
+//                    user = JOptionPane.showInputDialog("Nickname already in "
+//                            + "use!\n Please enter a unique nickname.");
+//                }
+//            }
+//        
 
             synchronized (this) {
                 userNames.add(user);
