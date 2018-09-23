@@ -1,0 +1,11 @@
+Good documentation of the project and the application.
+
+Your Experiments section is lacking a bit.
+You say you did a lot of testing of the features and requirements but
+_how_ did you go about doing so? What were the steps in your methods? 
+What concrete results and values did you get and what conclusions could
+you draw from them?
+
+Try separating the different experiments into their own subsections.
+
+Keep up the hard work!

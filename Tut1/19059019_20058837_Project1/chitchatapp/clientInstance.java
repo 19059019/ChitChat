@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.sql.Timestamp;
 
+@SuppressWarnings("deprecation")
 class clientInstance extends Thread {
 
     private DataInputStream clientMessage = null;
@@ -37,7 +38,8 @@ class clientInstance extends Thread {
             String userList = listToString(userNames);
             output.println(userList);
             user = clientMessage.readLine();
-
+            
+            // Add username to userNames list if the user completes the login
             synchronized (this) {
                 if (user != null) {
                     userNames.add(user);
@@ -60,7 +62,7 @@ class clientInstance extends Thread {
                 }
             }
 
-            // Listen for messages
+            // Listen for messages from clients
             while (true) {
                 String line = clientMessage.readLine();
                 String whisper = "";
@@ -69,7 +71,9 @@ class clientInstance extends Thread {
                 if (line.startsWith("EXIT")) {
                     break;
                 }
+                
 
+                // Decipher whisper requests
                 if (line.startsWith("@")) {
                     for (int i = 1; i < line.length(); i++) {
                         if (Character.isWhitespace(line.charAt(i))) {
@@ -79,7 +83,8 @@ class clientInstance extends Thread {
                         }
                     }
                 }
-
+                
+                // Send messages to all relevant clients
                 for (int i = 0; i < clientLimit; i++) {
                     if (whisper.equals("") && clientThreads[i] != null) {
                         clientThreads[i].output.println(user + ": " + line);
@@ -100,10 +105,10 @@ class clientInstance extends Thread {
                 }
             }
 
-            // remove user from list of usernames
             stamp = new Timestamp(System.currentTimeMillis());
             System.out.println(user + " Disconnected: " + stamp);
 
+            // remove user from list of usernames
             synchronized (this) {
                 userNames.remove(user);
             }
@@ -118,6 +123,7 @@ class clientInstance extends Thread {
                 }
             }
 
+            // free up client that has left to open space for a new client
             for (int i = 0; i < clientLimit; i++) {
                 if (clientThreads[i] == this) {
                     clientThreads[i] = null;
@@ -130,7 +136,16 @@ class clientInstance extends Thread {
         } catch (IOException e) {
         }
     }
-
+    
+    /**
+     * Method to turn a an array list to a String that uses ## as a Delimiter.
+     * 
+     * in:
+     * input - String ArrayList to be turned into a string.
+     * 
+     * out:
+     * out - String that uses ## as a Delimiter.
+    **/
     private String listToString(ArrayList<String> input) {
         String out = "";
         out = input.stream().map((name) -> "##" + name).reduce(out, String::concat);

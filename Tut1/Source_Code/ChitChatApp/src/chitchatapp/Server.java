@@ -23,6 +23,7 @@ public class Server {
         // open ServerSocket
         try {
             server = new ServerSocket(port);
+            System.out.println("ChitChat Server Running!");
         } catch (IOException e) {
             System.err.println(e);
         }
@@ -31,6 +32,7 @@ public class Server {
         while (status) {
             try {
                 client = server.accept();
+                System.out.println("Client attemptig to connect.");
 
                 for (i = 0; i < clientLimit; i++) {
                     if (clientThreads[i] == null) {
@@ -44,6 +46,7 @@ public class Server {
                 if (i == clientLimit) {
                     output = new PrintStream(client.getOutputStream());
                     output.println("ChitChat chatroom full, unlucky!");
+                    System.out.println("Client rejected due to client limit.");
                     output.close();
                     client.close();
                 }
